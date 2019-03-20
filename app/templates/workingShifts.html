@@ -1,0 +1,146 @@
+<div class="salary-components container">
+    <div class="row">
+        <div class="col-sm-3">
+            <form name="myForm" novalidate class="from-group component-form card">
+                <div class="row">
+                    <div class="col-sm-12" class="form-header">
+                        <h5>Working Shifts</h5>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Shift Name</label>
+                        <select class="form-control btn-default" ng-model="factor.shiftName">
+                            <option value="" selected ng-disabled="true">Select Shift</option>
+                            <option ng-repeat="shift in allShifts" value='{{shift.shiftName}}'>{{shift.shiftName}}</option>
+                        </select>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12" ng-if="factor.shiftName">
+                        <label>Factor Name</label>
+                        <input type="text" placeholder="Factor Name" name="factorName" ng-model="factor.factorName" required
+                            class="form-control">
+                        <span ng-show="myForm.factorName.$dirty">
+                            <span ng-show="myForm.factorName.$error.required" style="color: red">Enter factor name</span>
+                        </span>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12" ng-if="factor.shiftName">
+                        <label>Factor Type</label>
+                        <select class="form-control btn-default" ng-model="factor.type">
+                            <option value="allowance">Allowance</option>
+                            <option value="reduction">Reduction</option>
+                        </select>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12" ng-if="factor.shiftName">
+                        <label>Time Type</label>
+                        <select class="form-control btn-default" ng-model="factor.timeType">
+                            <option value="minutes" selected>Minutes</option>
+                            <option value="hours">Hours</option>
+                            <option value="days">Days</option>
+                        </select>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12" ng-if="factor.shiftName">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Extra Time</label>
+                                <input name="factorTime" type="number" class="form-control" placeholder="Time"
+                                       min="0" ng-model="factor.time" required style="text-align: center">
+                                <div ng-show="myForm.factorTime.$dirty">
+                                    <span ng-show="myForm.factorTime.$error.required" style="color: red">Enter time</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Extra Amount</label>
+                                <input name="factorAmount" type="number" class="form-control" placeholder="Amount" min="0"
+                                ng-model="factor.amount" required style="text-align:  center">
+                                <div ng-show="myForm.factorAmount.$dirty">
+                                    <span ng-show="myForm.factorAmount.$error.required" style="color: red">Enter Amount</span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12 pull-right" ng-if="factor.shiftName">
+                        <button ng-if="toggleButton=='add'" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="createShiftFactors()">Submit</button>
+                        <button ng-if="toggleButton!='add'" class="btn btn-danger"  ng-disabled="myForm.$invalid" ng-click="editShiftFactors()">Update</button>
+                        <button ng-if="toggleButton!='add'" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="cancelUpdation()">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-9">
+            <div class="filter">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Shift Name Search</label>
+                        <input ng-model="shiftNameFilter" class="form-control" placeholder="Shift Name">
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Factor Name Search</label>
+                        <input ng-model="factorNameFilter" class="form-control" placeholder="Factor Name">
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Via Factor Type</label>
+                        <select class="form-control btn-default" ng-model="factorTypeFilter">
+                            <option value="" selected>Factor Type</option>
+                            <option value="allowance">Allowance</option>
+                            <option value="reduction">Reduction</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Via Salary Type</label>
+                        <select class="form-control btn-default" ng-model="timeTypeFilter">
+                            <option value="" selected>Salary Type</option>
+                            <option value="minutes">Minutes</option>
+                            <option value="hours">Hours</option>
+                            <option value="days">Days</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <table class="table table-borderless table-content">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Shift Name</th>
+                        <th scope="col">Factor Name</th>
+                        <th scope="col">Factor Type</th>
+                        <th scope="col">Time Type</th>
+                        <th scope="col">Extra Time</th>
+                        <th scope="col">Extra Amount</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="factor in allFactors | filter: { shiftName: shiftNameFilter,factorName: factorNameFilter,
+                            type: factorTypeFilter} : startsWith | filter: {timeType: timeTypeFilter} : startsWith">
+                        <th scope="row">{{$index + 1}}</th>
+                        <td>{{factor.shiftName | uppercase }}</td>
+                        <td>{{factor.factorName | uppercase}}</td>
+                        <td ng-if="factor.type=='reduction'" style="color: red">{{factor.type | uppercase}}</td>
+                        <td ng-if="factor.type!=='reduction'" style="color: forestgreen">{{factor.type | uppercase}}</td>
+                        <td>{{factor.timeType | uppercase}}</td>
+                        <td>{{factor.time | uppercase}}</td>
+                        <td>{{factor.amount | uppercase}}</td>
+                        <td><i ng-click="editFactor(factor)" class="fas fa-pencil-alt edit-icon"></i></td>
+                        <td><i ng-click="deleteFactor(factor)" class="far fa-trash-alt delete-icon"></i></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="myModalContent.html">
+    <div class="modal-body" id="modal-body">
+    <div class="modal-footer">
+    </div>
+</script>

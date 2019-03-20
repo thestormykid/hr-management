@@ -1,0 +1,78 @@
+<div class="create-shifts container" >
+    <div class="row">
+        <div class="col-sm-4">
+            <form name="myForm" class="form-group card component-form" novalidate>
+                <div class="row">
+                    <div class="col-sm-12" class="form-header">
+                        <h5>Add Working Shifts</h5>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Shift Name</label>
+                        <input name="shiftName" required="" type="text" class="form-control" placeholder="Shift Name"  ng-model="shift.shiftName">
+                        <div ng-show="myForm.shiftName.$dirty">
+                            <span ng-show="myForm.shiftName.$error.required" style="color: red">Enter shift name</span>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Shift starting Time</label>
+                                <input type="time" name="shift.startingTime" class="form-control shift-time" required
+                                       ng-model="shift.startingTime">
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Shift ending Time</label>
+                                <input type="time" name="shift.endingTime" class="form-control shift-time" required
+                                       ng-model="shift.endingTime">
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12 ">
+                        <button class="btn btn-primary" ng-click="createShift()" ng-if="toggleButton=='add'" ng-disabled="myForm.$invalid">Add Shift</button>
+                        <button class="btn btn-primary" ng-click="editShiftDetails()" ng-if="toggleButton!='add'" ng-disabled="myForm.$invalid">Update</button>
+                        <button class="btn btn-warning" ng-click="cancelShift()" ng-if="togggle-button!='add'">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-8">
+            <div class="filter">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Search Via Name</label>
+                        <input ng-model="nameFilter" class="form-control" placeholder="Search Via name">
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Starting Time</th>
+                            <th scope="col">Ending Time</th>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="shift in allShifts | filter: {shiftName: nameFilter} : startsWith">
+                            <th scope="row">{{$index + 1}}.</th>
+                            <td>{{shift.shiftName | uppercase }}</td>
+                            <td style="color: green">{{shift.startingTime | date: 'shortTime' }}</td>
+                            <td style="color: blue">{{shift.endingTime | date: 'shortTime' }}</td>
+                            <td><i ng-click="editShift(shift)" class="fas fa-pencil-alt edit-icon"></i></td>
+                            <td><i ng-click="deleteSingleShift(shift)" class="far fa-trash-alt delete-icon"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
