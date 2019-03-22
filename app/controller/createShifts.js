@@ -3,19 +3,18 @@ management.controller('createShiftsCtrl', ['$scope', 'createShiftService', funct
     $scope.shift = {};
     $scope.allShifts = [];
     $scope.toggleButton = 'add';
-
+    var hulla = new hullabaloo();
 
     $scope.createShift = function() {
         if (checkForDuplicateShiftName()) {
-            alert('this component name already exists enter different name');
+            hulla.send('this component name already exists enter different name','danger')
             return;
 
         }
         var timeStatus = timeValidation();
-        console.log(timeStatus);
 
         if(timeStatus.status) {
-            alert(timeStatus.message);
+            hulla.send(timeStatus.message, 'danger');
             return;
         }
 
@@ -26,7 +25,7 @@ management.controller('createShiftsCtrl', ['$scope', 'createShiftService', funct
                     $scope.allShifts = shift.allShifts;
                     flushDetails();
                     console.log('shift added successfully');
-
+                    hulla.send()
                 }
 
             }, function(error) {
@@ -42,34 +41,33 @@ management.controller('createShiftsCtrl', ['$scope', 'createShiftService', funct
             message:""
         }
 
-        if ($scope.shift.startingTime > $scope.shift.endingTime) {
-            checkStatus.status = true;
-            checkStatus.message = "starting time can't be more than ending time";
-        }
-
         _.forEach($scope.allShifts, function(singleShift) {
-            // partial overlap
+
             if (!shift || shift.id != singleShift.id) {
                 if (Date.parse($scope.shift.startingTime) >= Date.parse(singleShift.startingTime) && Date.parse($scope.shift.startingTime)
                     <= Date.parse(singleShift.endingTime)) {
                     checkStatus.status = true;
                     checkStatus.message = 'the time range you want is occupied';
+
                 }
 
-                if ($scope.shift.endingTime >= singleShift.startingTime && $scope.shift.endingTime <= singleShift.endingTime) {
+                if (Date.parse($scope.shift.endingTime) >= Date.parse(singleShift.startingTime) && Date.parse($scope.shift.endingTime) <= Date.parse(singleShift.endingTime)) {
                     checkStatus.status = true;
                     checkStatus.message = 'the time range you want is occupied';
-
-
                 }
 
-                if ($scope.shift.startingTime <= singleShift.startingTime && $scope.shift.endingTime >= singleShift.endingTime) {
+                if (Date.parse($scope.shift.startingTime) <= Date.parse(singleShift.startingTime) && Date.parse($scope.shift.endingTime) >= Date.parse(singleShift.endingTime)) {
                     checkStatus.status = true;
                     checkStatus.message = 'the time range you want is occupied';
                 }
             }
 
         })
+
+        if ($scope.shift.startingTime > $scope.shift.endingTime) {
+            checkStatus.status = true;
+            checkStatus.message = "starting time can't be more than ending time";
+        }
 
         return checkStatus;
     }
@@ -101,14 +99,14 @@ management.controller('createShiftsCtrl', ['$scope', 'createShiftService', funct
         })
 
         if (checkForDuplicateShiftName(_shift)) {
-            alert('this component name already exists enter different name');
+            hulla.send('shift name already exists','danger');
             return;
         }
 
         var timeStatus = timeValidation(_shift);
 
         if (timeStatus.status) {
-            alert(timeStatus.message);
+            hulla.send(timeStatus.message, 'danger');
             return;
 
         }
@@ -118,12 +116,12 @@ management.controller('createShiftsCtrl', ['$scope', 'createShiftService', funct
         createShiftService.updateShift($scope.allShifts, _shift)
             .then(function(status) {
                 if (status == 200) {
-                    console.log('item updated successfully');
+                    hulla.send('shift updated successfully', 'success');
                     flushDetails();
 
                 }
             }, function(errorStatus) {
-                console.log('item not updated successfully');
+                hulla.send('item not updated successfully', 'danger');
 
             })
 
@@ -145,11 +143,11 @@ management.controller('createShiftsCtrl', ['$scope', 'createShiftService', funct
             }
 
             $scope.allShifts = removedShift.allShifts;
-
-            console.log('shift deleted successfully');
+            hulla.send('shift deleted successfully','success');
 
         }, function(error) {
-            console.log("item not deleted");
+            hulla.send('item not deleted', 'danger')
+
         })
 
     }
@@ -177,12 +175,12 @@ management.controller('createShiftsCtrl', ['$scope', 'createShiftService', funct
             $scope.allShifts = data.allShifts;
             console.log($scope.allShifts);
 
-        }, function() {
-            alert('something went wrong');
+        }, function(error) {
+            hulla.send('something went wrong','success');
+
         })
     }
 
 
     $scope.getData();
-
 }])

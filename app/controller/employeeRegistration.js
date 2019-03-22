@@ -1,10 +1,113 @@
-management.controller('employeeRegistrationCtrl',['$scope', 'designationService', 'createShiftService', 'employeeService', function($scope, designationService, createShiftService, employeeService) {
+management.controller('employeeRegistrationCtrl',['$scope', 'designationService', 'createShiftService', 'employeeService',
+    '$uibModal', function($scope, designationService, createShiftService, employeeService, $uibModal) {
 
-    $scope.allEmployees = [];
+        var hulla = new hullabaloo();
+
+        $scope.allEmployees = [];
+
+
+    $scope.deleteEmployee = function(employee) {
+
+        employeeService.removeEmployee(employee)
+            .then(function(allEmployees) {
+                $scope.allEmployees = allEmployees;
+                hulla.send('employee successfully deleted', 'success');
+
+            }, function(error) {
+                console.log("can't able to delete employee")
+
+            })
+    }
+
+    $scope.edit = function(employee) {
+        var modalInstance = $uibModal.open({
+            animation: true,
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'myModalContent.html',
+            controller: 'ModalInstanceCtrl',
+            controllerAs: '$scope',
+            windowClass: 'show',
+            resolve: {
+                employee: function () {
+                    return employee;
+                }
+            }
+        })
+
+        modalInstance.result.then(function(allEmployee) {
+            $scope.allEmployees = allEmployee;
+            hulla.send('employee details updated', 'info');
+
+        }, function() {
+
+        });
+
+    }
+
+    $scope.open = function (employee) {
+        var dataNeedToBeSend = {}
+        dataNeedToBeSend.button = 'add';
+
+        if (employee) {
+            dataNeedToBeSend.employeeDetails = {};
+            Object.assign(dataNeedToBeSend.employeeDetails, employee)
+            dataNeedToBeSend.button = 'update';
+        }
+
+
+        var modalInstance = $uibModal.open({
+            animation: true,
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'myModalContent.html',
+            controller: 'ModalInstanceCtrl',
+            controllerAs: '$scope',
+            windowClass: 'show',
+            resolve: {
+                data: function () {
+                    return dataNeedToBeSend;
+                }
+            }
+        });
+
+        modalInstance.result.then(function (allEmployees) {
+            $scope.allEmployees = allEmployees;
+            hulla.send('employees added successfully', 'success');
+
+        }, function() {
+
+        });
+    };
+
+
+    function getData() {
+
+        employeeService.getAllEmployee()
+            .then(function(allEmployees) {
+                $scope.allEmployees = allEmployees;
+                console.log($scope.allEmployees);
+
+            }, function(error) {
+                console.log('not able to fetch employee');
+
+            })
+
+    }
+
+    getData();
+
+}])
+
+management.controller('ModalInstanceCtrl', function ($uibModalInstance, designationService, createShiftService, employeeService, $scope, data) {
+
     $scope.allDesignations = [];
     $scope.allShifts = [];
     $scope.employee = {};
     $scope.toggleButton = 'add';
+    $scope.employee = data.employeeDetails;
+    var hulla = new hullabaloo();
+    $scope.toggleButton  = data.button;
 
     $scope.selectShiftId = function() {
         if (!$scope.employee.shiftName) {
@@ -38,9 +141,7 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
 
         employeeService.addEmployee(_employee)
             .then(function(allEmployees) {
-                $scope.allEmployees = allEmployees;
-                flushDetails();
-                console.log($scope.allEmployees);
+                $uibModalInstance.close(allEmployees);
 
             }, function(error) {
                 console.log('not able to add employees');
@@ -48,26 +149,25 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
             })
     }
 
+    $scope.editEmployee = function() {
+        var _employee = {};
+        Object.assign(_employee, $scope.employee);
 
-    function flushDetails() {
-        $scope.employee = {};
-        $scope.toggleButton = 'add';
-        $scope.myForm.$setPristine();
+        employeeService.updateEmployee(_employee)
+            .then(function(allEmployees) {
+                $uibModalInstance.close(allEmployees)
+
+            }, function () {
+
+            })
+    }
+
+    $scope.cancelUpdation = function() {
+        $uibModalInstance.dismiss('cancel');
 
     }
 
-
     function getData() {
-
-        employeeService.getAllEmployee()
-            .then(function(allEmployees) {
-                $scope.allEmployees = allEmployees;
-                console.log($scope.allEmployees);
-
-            }, function(error) {
-                console.log('not able to fetch employee');
-
-            })
 
         designationService.getAllDesignations()
             .then(function (fetchedDesignations) {
@@ -91,4 +191,4 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
     }
 
     getData();
-}])
+});

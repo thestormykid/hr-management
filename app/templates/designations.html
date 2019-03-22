@@ -1,4 +1,39 @@
-<div class="container card">
+<div class="container card designation-list">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col" colspan="1">#</th>
+                <th scope="col" colspan="3">Name</th>
+                <th scope="col" colspan="6">Component Name</th>
+                <th scope="col" colspan="1">Edit</th>
+                <th scope="col" colspan="1">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="singleDesignation in allDesignations">
+                <td colspan="1">{{$index + 1}}</td>
+                <td colspan="3">{{singleDesignation.name}}</td>
+                <td colspan="6">
+                    <span class="component-list" ng-repeat="component in singleDesignation.components">
+                        {{component.componentName}}
+                    </span>
+                </td>
+                <td colspan="1"><i ng-click="editSingleDesignation(singleDesignation);showDesignationForm()" class="fas fa-pencil-alt edit-icon"></i></td>
+                <td colspan="1"><i ng-click="deleteSingleDesignation(singleDesignation)" class="far fa-trash-alt delete-icon"></i></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-sm-10"></div>
+        <div class="col-sm-2">
+            <button class="float-right btn btn-success" ng-click="showDesignationForm()">
+                Add Designation
+            </button>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container card" ng-if="displayDesignation">
     <form name="myForm" novalidate class="form-group">
         <div class="row">
             <div class="col-sm-3">
@@ -6,7 +41,7 @@
             <div class="col-sm-6">
                 <label>Designation Name</label>
                 <input class="form-control" placeholder="Enter Designation" type="text" ng-model="designation.name"
-                required="" name="designationName">
+                       required="" name="designationName">
 
                 <div ng-show="myForm.designationName.$dirty">
                     <span ng-show="myForm.designationName.$error.required" style="color: red">Enter Designation name</span>
@@ -30,14 +65,14 @@
             <div class="row" style="margin-top: 0.5em" ng-repeat="component in designation.components">
                 <div  class="col-sm-1"></div>
                 <div class="col-sm-1 indexing">{{$index + 1}}.</div>
-                <div class="col-sm-2">
+                <div class="col-sm-2 indexing">
                     <div class="btn-group" uib-dropdown is-open="status.isopen" style="width: 100%">
                         <button class="form-control btn-default" type="text" placeholder="Component Name"
                                 uib-dropdown-toggle ng-disabled="disabled" ng-if="component.componentName">
-                         {{component.componentName}}
+                            {{component.componentName}}
                         </button>
                         <input required class="form-control" id="single-button" type="text" placeholder="Component Name"
-                             name="n{{$index}}"  uib-dropdown-toggle ng-disabled="disabled" ng-model="search.nameFilter" ng-if="component.componentName == null">
+                               name="n{{$index}}"  uib-dropdown-toggle ng-disabled="disabled" ng-model="search.nameFilter" ng-if="component.componentName == null">
                         <ul  class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
                             <div ng-repeat="_component in allComponents | filter: {componentName: search.nameFilter}">
                                 <li class="menu-item" role="menuitem" ng-click="componentSelected(component, _component)"><a>
@@ -50,7 +85,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2 indexing">
                     <select class="form-control btn-default" ng-model="component.salaryType"
                             ng-disabled="component.componentName == null || component.editableType=='non-editable' ">
                         <option value="" selected ng-disabled="true">Salary Type</option>
@@ -58,14 +93,31 @@
                         <option value="percentage">Percentage</option>
                     </select>
                 </div>
-                <div class="col-sm-2">
-                    <input name="s{{$index}}" type="number" class="form-control" placeholder="salary value"
-                           step="0.01" min="0" ng-model="component.salaryValue" required="" ng-disabled="component.componentName==null || component.editableType=='non-editable'">
-                    <span ng-show="myForm.s{{$index}}.$dirty || myForm.s{{$index}}.$touched">
-                        <span ng-show="myForm.s{{$index}}.$error.required" style="color: red">*</span>
-                    </span>
+                <div class="col-sm-2 indexing" ng-if="component.salaryType!='percentage'">
+                    <div class="input-group ">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">&#x20b9;</span>
+                        </div>
+                        <input name="s{{$index}}" type="number" class="form-control" placeholder="salary value"
+                               step="0.01" min="0" ng-model="component.salaryValue" required="" ng-disabled="component.componentName==null || component.editableType=='non-editable'">
+                        <span ng-show="myForm.s{{$index}}.$dirty || myForm.s{{$index}}.$touched">
+                            <span ng-show="myForm.s{{$index}}.$error.required" style="color: red">*</span>
+                        </span>
+                    </div>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2 indexing" ng-if="component.salaryType=='percentage'">
+                    <div class="input-group ">
+                        <input name="s{{$index}}" type="number" class="form-control" placeholder="salary value"
+                               step="0.01" min="0" ng-model="component.salaryValue" required="" ng-disabled="component.componentName==null || component.editableType=='non-editable'">
+                        <span ng-show="myForm.s{{$index}}.$dirty || myForm.s{{$index}}.$touched">
+                            <span ng-show="myForm.s{{$index}}.$error.required" style="color: red">*</span>
+                        </span>
+                        <div class="input-group-append">
+                            <span class="input-group-text">&#37;</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2 indexing">
                     <select ng-class="selectClass(component.componentType)" class="form-control btn-default" ng-model="component.componentType" ng-disabled="component.componentName==null || component.editableType=='non-editable'">
                         <option value="" selected ng-disabled="true">Component Type</option>
                         <option value="allowance">Allowance</option>
@@ -73,7 +125,7 @@
                     </select>
                 </div>
 
-                <i ng-click="deleteRow(component)" class="far fa-times-circle delete-row"></i>
+                <i ng-click="deleteRow(component)" class="far fa-times-circle delete-row indexing"></i>
                 <!--<div class="col-sm-1 delete-row" ng-click="deleteRow(component)">X</div>-->
             </div>
         </div>
@@ -85,31 +137,4 @@
             <button class="btn btn-info"    ng-click="flushData()" ng-if="toggleButton!='add'">Cancel</button>
         </div>
     </form>
-</div>
-
-<div class="container card designation-list">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th scope="col" colspan="1">#</th>
-                <th scope="col" colspan="3">Name</th>
-                <th scope="col" colspan="6">Component Name</th>
-                <th scope="col" colspan="1">Edit</th>
-                <th scope="col" colspan="1">Delete</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="singleDesignation in allDesignations">
-                <td colspan="1">{{$index + 1}}</td>
-                <td colspan="3">{{singleDesignation.name}}</td>
-                <td colspan="6">
-                    <span class="component-list" ng-repeat="component in singleDesignation.components">
-                        {{component.componentName}}
-                    </span>
-                </td>
-                <td colspan="1"><i ng-click="editSingleDesignation(singleDesignation)" class="fas fa-pencil-alt edit-icon"></i></td>
-                <td colspan="1"><i ng-click="deleteSingleDesignation(singleDesignation)" class="far fa-trash-alt delete-icon"></i></td>
-            </tr>
-        </tbody>
-    </table>
 </div>

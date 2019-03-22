@@ -10,28 +10,44 @@
                 <br>
                 <div class="row">
                     <div class="col-sm-12">
-                        <label>salary component name</label>
-                        <input name="componentName" required="" type="text" class="form-control" placeholder="Component Name"  ng-model="componentName">
-                        <div ng-show="myForm.componentName.$dirty">
-                            <span ng-show="myForm.componentName.$error.required" style="color: red">Enter your name</span>
+                        <div class="input-group">
+                            <input name="componentName" required="" type="text" class="form-control" placeholder="Component Name"  ng-model="componentName">
+                            <div ng-show="myForm.componentName.$dirty">
+                                <span ng-show="myForm.componentName.$error.required" style="color: red">Enter your name</span>
+                            </div>
                         </div>
                         <hr>
                     </div>
                     <div class="col-sm-12">
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="col-sm-5">
                                 <label>salary type</label>
                                 <select class="form-control btn-default" ng-model="selectedSalaryType">
                                     <option value="amount">Amount</option>
                                     <option value="percentage">Percentage</option>
                                 </select>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-7">
                                 <label>salary value</label>
-                                <input name="salaryValue" type="number" class="form-control" placeholder="salary value"
-                                       step="0.01" min="0" ng-model="salaryValue" required="">
-                                <div ng-show="myForm.salaryValue.$dirty">
-                                    <span ng-show="myForm.salaryValue.$error.required" style="color: red">Enter salary value</span>
+                                <div class="input-group" ng-if="selectedSalaryType=='amount'">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">&#x20b9;</span>
+                                    </div>
+                                    <input name="salaryValue" type="number" class="form-control" placeholder="salary value"
+                                           step="0.01" min="0" ng-model="salaryValue" required="">
+                                    <div ng-show="myForm.salaryValue.$dirty">
+                                        <span ng-show="myForm.salaryValue.$error.required" style="color: red">Enter salary value</span>
+                                    </div>
+                                </div>
+                                <div class="input-group" ng-if="selectedSalaryType=='percentage'">
+                                    <input name="salaryValue" type="number" class="form-control" placeholder="salary value"
+                                           step="0.01" min="0" ng-model="salaryValue" required="">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">&#37;</span>
+                                    </div>
+                                    <div ng-show="myForm.salaryValue.$dirty">
+                                        <span ng-show="myForm.salaryValue.$error.required" style="color: red">Enter salary value</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -104,7 +120,6 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Name</th>
-                            <th scope="col">Type</th>
                             <th scope="col">quantity</th>
                             <th scope="col">component type</th>
                             <th scope="col">Editable</th>
@@ -117,8 +132,8 @@
                             editableType: editableTypeFilter} : startsWith | filter: {componentName: nameFilter} : startsWith">
                             <th scope="row">{{$index + 1}}</th>
                             <td>{{component.componentName | uppercase }}</td>
-                            <td>{{component.salaryType | uppercase}}</td>
-                            <td>{{component.salaryValue | uppercase}}</td>
+                            <td ng-if="component.salaryType=='amount'">₹ {{component.salaryValue | uppercase}}</td>
+                            <td ng-if="component.salaryType=='percentage'">{{component.salaryValue | uppercase}} %</td>
                             <td ng-if="component.componentType=='reduction'" style="color: red">{{component.componentType | uppercase}}</td>
                             <td ng-if="component.componentType!=='reduction'" style="color: forestgreen">{{component.componentType | uppercase}}</td>
                             <td>{{component.editableType | uppercase}}</td>

@@ -21,10 +21,6 @@ select {
     cursor: pointer;
 }
 
-td,th{
-    text-align: center;
-}
-
 label {
     color: grey;
 }
@@ -166,4 +162,8 @@ nav {
 
 .employee-registration {
     width: 35%;
+}
+
+.employee-details {
+    margin-top: 2em;
 }

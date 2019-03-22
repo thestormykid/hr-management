@@ -5,19 +5,20 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
     $scope.factor.timeType = 'minutes';
     $scope.allFactors = [];
     $scope.allShifts;
+    var hulla = new hullabaloo();
     $scope.toggleButton = 'add';
 
 
     $scope.createShiftFactors = function() {
         if (checkForDuplicateFactorName()) {
-            alert('this factor name already exists with same shiftName');
+            hulla.send('same factor name exists with same shift name', 'info')
             return;
 
         }
 
         workingShiftService.createShiftFactor($scope.factor)
             .then(function(insertedFactor) {
-                console.log('shift factor successfully created');
+                hulla.send('shift factor created successfully', 'success');
                 $scope.allFactors.push(insertedFactor.factor);
                 flushDetails();
 
@@ -45,7 +46,7 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
         })
 
         if (checkForDuplicateFactorName(_factor)) {
-            alert('this factor name already exists with same shiftName');
+            hulla.send('same factor name exists with same shift name', 'info')
             return;
 
         }
@@ -55,8 +56,9 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
         workingShiftService.editFactorDetails($scope.allFactors)
             .then(function(editedFactors) {
                 if (editedFactors.status == 200) {
-                    console.log('factor updated successfully');
+                    hulla.send('factor updated successfully', 'success');
                     flushDetails();
+
                 }
 
             }, function(error) {
@@ -87,8 +89,7 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
             }
 
             $scope.allFactors = removedFactor.data;
-
-            console.log('factor deleted successfully');
+            hulla.send('deleted successfully', 'success');
 
         }, function(error) {
             console.log("item not deleted");

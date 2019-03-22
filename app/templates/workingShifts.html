@@ -55,10 +55,15 @@
                             </div>
                             <div class="col-sm-6">
                                 <label>Extra Amount</label>
-                                <input name="factorAmount" type="number" class="form-control" placeholder="Amount" min="0"
-                                ng-model="factor.amount" required style="text-align:  center">
-                                <div ng-show="myForm.factorAmount.$dirty">
-                                    <span ng-show="myForm.factorAmount.$error.required" style="color: red">Enter Amount</span>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">&#x20b9;</span>
+                                    </div>
+                                    <input name="factorAmount" type="number" class="form-control" min="0"
+                                           ng-model="factor.amount" required style="text-align:  center">
+                                    <div ng-show="myForm.factorAmount.$dirty">
+                                        <span ng-show="myForm.factorAmount.$error.required" style="color: red">Enter Amount</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -121,7 +126,7 @@
                     <tbody>
                     <tr ng-repeat="factor in allFactors | filter: { shiftName: shiftNameFilter,factorName: factorNameFilter,
                             type: factorTypeFilter} : startsWith | filter: {timeType: timeTypeFilter} : startsWith">
-                        <th scope="row">{{$index + 1}}</th>
+                        <th scope="row">{{$index + 1}}.</th>
                         <td>{{factor.shiftName | uppercase }}</td>
                         <td>{{factor.factorName | uppercase}}</td>
                         <td ng-if="factor.type=='reduction'" style="color: red">{{factor.type | uppercase}}</td>

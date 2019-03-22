@@ -7,6 +7,7 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
     $scope.selectedComponentType = 'reduction';
     $scope.selectedEditableType = 'editable';
     $scope.toggleButton = 'add';
+    var hulla = new hullabaloo();
     $scope.componentId;
 
     $scope.animationsEnabled = true;
@@ -18,7 +19,7 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
         }
 
         if (checkForDuplicateComponentName()) {
-            alert('this component name already exists enter different name');
+            hulla.send('name already exists', 'danger');
             return;
 
         }
@@ -27,11 +28,12 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
             $scope.selectedComponentType, $scope.selectedEditableType, function(insertedData) {
             if (insertedData.status == "200") {
                 $scope.allComponents = insertedData.data;
-                console.log($scope.allComponents);
+                hulla.send('component added successfully','success');
                 flushDetails();
 
             } else {
-                alert('something went wrong!!! ');
+                hulla.send('something went wrong', 'danger');
+
             }
         })
     }
@@ -46,7 +48,7 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
         }
 
         if (checkForDuplicateComponentName(_component)) {
-            alert('this component name already exists enter different name');
+            hulla.send('name already exits', 'danger');
             return;
         }
 
@@ -59,12 +61,13 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
         salaryComponentService.updateComponet($scope.allComponents, _component).then(function(status) {
             console.log(status);
             if (status == 200) {
-                console.log('item updated successfully');
+                hulla.send('item updated successfully', 'success');
                 flushDetails();
+
             }
 
         }, function(errorStatus) {
-            console.log('item not updated successfully');
+            hulla.send('item not updated successfully', 'danger');
 
         })
 
@@ -85,8 +88,7 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
                 flushDetails()
             }
             $scope.allComponents = removedComponent.data;
-
-            console.log('component deleted successfully');
+            hulla.send('component deleted successfully', 'success');
 
         }, function(error) {
             console.log("item not deleted");
@@ -134,9 +136,6 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
         $scope.toggleButton = 'add';
         $scope.componentId = null;
         $scope.myForm.$setPristine();
-        // console.log($scope.myForm.$pristine)
-        // $scope.myForm.$pristine = true;
-        console.log($scope.myForm.$pristine)
     }
 
     $scope.startsWith = function (actual, expected) {
@@ -165,5 +164,4 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
 
         return x;
     }
-
 }])

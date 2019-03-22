@@ -11,6 +11,8 @@ management.controller('designationCtrl', ['$scope', 'designationService', functi
         name: null,
         components: []
     };
+    var hulla = new hullabaloo();
+
 
 
 
@@ -53,6 +55,11 @@ management.controller('designationCtrl', ['$scope', 'designationService', functi
 
     }
 
+    $scope.showDesignationForm = function () {
+        $scope.displayDesignation = true;
+
+    }
+
     $scope.deleteSingleDesignation = function(_designation) {
         _.remove($scope.allDesignations, function(singleDesignation) {
             return _designation.id == singleDesignation.id;
@@ -73,7 +80,7 @@ management.controller('designationCtrl', ['$scope', 'designationService', functi
     $scope.addData = function() {
 
         if(checkDesignationNameForDuplication()) {
-            alert('this designation already exists, Enter different name');
+            hulla.send('designation name already exists', 'danger');
             return;
 
         }
@@ -81,14 +88,14 @@ management.controller('designationCtrl', ['$scope', 'designationService', functi
         designationService.insertDesignation($scope.designation)
             .then(function(dataStatus) {
                 if (dataStatus == 200) {
-                    console.log('data Successfully added');
+                    hulla.send('data Successfully added', 'success')
 
                 }
 
                 flushData();
 
             }, function(error) {
-                console.log('an error has occured!');
+                hulla.send('an error has occured!', 'danger');
 
             })
     }
@@ -96,21 +103,23 @@ management.controller('designationCtrl', ['$scope', 'designationService', functi
     $scope.editData = function() {
 
         if(checkDesignationNameForDuplication()) {
-            alert('this designation already exists, Enter different name');
+            hulla.send('this designation already exists','danger');
             return;
 
         }
 
+
+
         designationService.updateDesignation($scope.allDesignations)
             .then(function(status) {
                 if (status == 200) {
-                    console.log('designation updated successfully');
+                    hulla.send('designation updated successfully','success');
                     flushData();
                     $scope.toggleButton = 'add';
 
                 }
             }, function(error) {
-                console.log('designation not updated. something went wrong')
+                hulla.send('designation not updated','danger');
 
             })
     }
@@ -149,6 +158,7 @@ management.controller('designationCtrl', ['$scope', 'designationService', functi
             components: []
         };
 
+        $scope.displayDesignation = false;
         $scope.myForm.$setPristine();
         getAllDesignations();
         getAllComponents();
