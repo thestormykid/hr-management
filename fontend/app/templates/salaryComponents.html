@@ -1,0 +1,205 @@
+<div class="salary-components container">
+    <div class="row">
+        <div class="col-sm-4">
+            <form name="myForm" novalidate class="from-group component-form card">
+                <div class="row">
+                    <div class="col-sm-12" class="form-header">
+                        <h5>SALARY COMPONENTS</h5>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="">
+                            <input name="componentName" required="" type="text" class="form-control" placeholder="Component Name"
+                                   ng-model="component.componentName">
+                            <div ng-show="myForm.componentName.$dirty">
+                                <span ng-show="myForm.componentName.$error.required" style="color: red">Enter your name</span>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <label>salary type</label>
+                                <select class="form-control btn-default" ng-model="component.salaryType">
+                                    <option value="amount">Amount</option>
+                                    <option value="percentage">Percentage</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-7">
+                                <label>salary value</label>
+                                <div class="input-group" ng-if="component.salaryType=='amount'">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">&#x20b9;</span>
+                                    </div>
+                                    <input name="salaryValue" type="number" class="form-control" placeholder="salary value"
+                                           step="0.01" min="0" ng-model="component.salaryValue" required="">
+                                    <div ng-show="myForm.salaryValue.$dirty">
+                                        <span ng-show="myForm.salaryValue.$error.required" style="color: red">Enter salary value</span>
+                                    </div>
+                                </div>
+                                <div class="input-group" ng-if="component.salaryType=='percentage'">
+                                    <input name="salaryValue" type="number" class="form-control" placeholder="salary value"
+                                           step="0.01" min="0" ng-model="component.salaryValue" required>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">&#37;</span>
+                                    </div>
+                                    <div ng-show="myForm.salaryValue.$dirty">
+                                        <span ng-show="myForm.salaryValue.$error.required" style="color: red">Enter salary value</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12">
+                        <label>component type</label>
+                        <select class="form-control btn-default" ng-model="component.componentType">
+                            <option value="allowance">Allowance</option>
+                            <option value="reduction">Reduction</option>
+                        </select>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12">
+                        <label>component editable/non-editable</label>
+                        <select class="form-control btn-default" ng-model="component.editableType">
+                            <option value='editable'>editable</option>
+                            <option value='non-editable'>non editable</option>
+                        </select>
+                        <hr>
+                    </div>
+                    <div class="col-sm-12 pull-right">
+                        <button ng-if="toggleButton=='add'" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="addSalaryComponent()">Add Component</button>
+                        <button ng-if="toggleButton!='add'" class="btn btn-danger"  ng-disabled="myForm.$invalid" ng-click="editComponentDetails()">Update</button>
+                        <button ng-if="toggleButton!='add'" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="cancelUpdation()">cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-8">
+            <div class="filter">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label>Search Via Name</label>
+                        <input ng-model="nameFilter" class="form-control" placeholder="Search Via name">
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Via Salary Type</label>
+                        <select class="form-control btn-default" ng-model="salaryTypeFilter">
+                            <option value="" selected>Salary Type</option>
+                            <option value="amount">Amount</option>
+                            <option value="percentage">Percentage</option>
+                        </select>
+                        <!--<input class="form-control" placeholder="">-->
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Via Component Type</label>
+                        <select class="form-control btn-default" ng-model="componentTypeFilter">
+                            <option value="" selected>Component Type</option>
+                            <option value="allowance">Allowance</option>
+                            <option value="reduction">Reduction</option>
+                        </select>
+                        <!--<input class="form-control" placeholder="">-->
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Editable/Non-Editable</label>
+                        <select class="form-control btn-default" ng-model="editableTypeFilter">
+                            <option value="" selected>Editable/Non-Editable</option>
+                            <option value='editable'>editable</option>
+                            <option value='non-editable'>non editable</option>
+                        </select>
+                        <!--<input class="form-control" placeholder="">-->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">quantity</th>
+                            <th scope="col">component type</th>
+                            <th scope="col">Editable</th>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="component in allComponents | filter: { salaryType: salaryTypeFilter,componentType: componentTypeFilter,
+                            editableType: editableTypeFilter} : startsWith | filter: {componentName: nameFilter} : startsWith">
+                            <th scope="row">{{$index + 1}}</th>
+                            <td>{{component.componentName | uppercase }}</td>
+                            <td ng-if="component.salaryType=='amount'">₹ {{component.salaryValue | uppercase}}</td>
+                            <td ng-if="component.salaryType=='percentage'">{{component.salaryValue | uppercase}} %</td>
+                            <td ng-if="component.componentType=='reduction'" style="color: red">{{component.componentType | uppercase}}</td>
+                            <td ng-if="component.componentType!=='reduction'" style="color: forestgreen">{{component.componentType | uppercase}}</td>
+                            <td>{{component.editableType | uppercase}}</td>
+                            <td ng-if="component.editableType=='editable'" ><i ng-click="editComponent(component)" class="fas fa-pencil-alt edit-icon"></i></td>
+                            <td ng-if="component.editableType=='non-editable'" ><i class="fas fa-pencil-alt" style="color: grey"></i></td>
+                            <td><i ng-click="deleteSingleComponent(component)" class="far fa-trash-alt delete-icon"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script type="text/ng-template" id="myModalContent.html">-->
+    <!--<div class="modal-body" id="modal-body">-->
+        <!--<form class="from-group component-form">-->
+            <!--<div class="row">-->
+                <!--<div class="col-sm-12" class="form-header">-->
+                    <!--<h5>SALARY COMPONENTS</h5>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<br>-->
+            <!--<div class="row">-->
+                <!--<div class="col-sm-12">-->
+                    <!--<input type="text" class="form-control" placeholder="Component Name"  ng-model="dataNeedToBeUpdated.componentName">-->
+                    <!--<span style="color: red"></span>-->
+                    <!--<hr>-->
+                <!--</div>-->
+                <!--<div class="col-sm-12">-->
+                    <!--<div class="row">-->
+                        <!--<div class="col-sm-6">-->
+                            <!--<select class="form-control btn-default" ng-model="dataNeedToBeUpdated.selectedSalaryType">-->
+                                <!--<option value="amount">Amount</option>-->
+                                <!--<option value="percentage">Percentage</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                        <!--<div class="col-sm-6">-->
+                            <!--<input type="number" class="form-control" placeholder="salary value"-->
+                                   <!--step="0.01" min="0" ng-model="dataNeedToBeUpdated.salaryValue">-->
+                            <!--<span style="color: red"></span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<hr>-->
+                <!--</div>-->
+                <!--<div class="col-sm-12">-->
+                    <!--<select class="form-control btn-default" ng-model="dataNeedToBeUpdated.selectedComponentType">-->
+                        <!--<option value="allowance">Allowance</option>-->
+                        <!--<option value="reduction">Reduction</option>-->
+                    <!--</select>-->
+                    <!--<hr>-->
+                <!--</div>-->
+                <!--<div class="col-sm-12">-->
+                    <!--<select class="form-control btn-default" ng-model="dataNeedToBeUpdated.selectedEditableType">-->
+                        <!--<option value='editable'>editable</option>-->
+                        <!--<option value='non-editable'>non editable</option>-->
+                    <!--</select>-->
+                    <!--<hr>-->
+                <!--</div>-->
+                <!--<div class="col-sm-12 pull-right">-->
+                    <!--&lt;!&ndash;<button class="btn btn-primary" ng-click="addSalaryComponent()">Add Component</button>&ndash;&gt;-->
+                    <!--<button class="btn btn-primary" type="button" ng-click="ok()">Update</button>-->
+                    <!--<button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</form>-->
+    <!--</div>-->
+<!--</script>-->

@@ -1,0 +1,136 @@
+<div class="col-sm-12 container">
+    <div class="filter">
+        <!--<div class="row">-->
+            <!--<div ng-repeat="" class="col-sm-3">-->
+                <!--<label>Search Employee Name</label>-->
+                <!--<input ng-model="nameFilter" class="form-control" placeholder="Search Via name">-->
+            <!--</div>-->
+            <!--<div class="col-sm-3">-->
+                <!--<i ng-click="addFilter()" class="fa fa-plus fa-2x" aria-hidden="true"></i>-->
+            <!--</div>-->
+            <div class="col-sm-3">
+                <label>Search Employee Code</label>
+                <input ng-model="codeFilter" class="form-control" placeholder="Search Via code">
+            </div>
+            <div class="col-sm-3">
+                <label>Search Desingation Name</label>
+                <input ng-model="designationFilter" class="form-control" placeholder="Search Designation">
+            </div>
+            <div class="col-sm-3">
+                <label>Search Shift Name</label>
+                <input ng-model="shiftFilter" class="form-control" placeholder="Search Shift">
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-10"></div>
+        <div class="col-sm-2 float-right">
+            <button type="button" class="btn btn-success form-control" ng-click="open()">
+                Create Employee
+            </button>
+        </div>
+        <br>
+    </div>
+
+    <div class="card employee-details">
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">E. Name</th>
+                    <th scope="col">E. Code</th>
+                    <th scope="col">Designation</th>
+                    <th scope="col">Shift Name</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Edit</th>
+                    <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="employee in allEmployees | filter: { name: nameFilter, code: codeFilter,
+                                deisngationName: designationFilter, shiftName: shiftFilter} : startsWith">
+                    <th scope="row">{{$index + 1}}</th>
+                    <td>{{employee.name | uppercase }}</td>
+                    <td>{{employee.code | uppercase}}</td>
+                    <td>{{employee.designationName | uppercase}}</td>
+                    <td>{{employee.shiftName}}</td>
+                    <td>{{employee.address}}</td>
+                    <td><i ng-click="open(employee)" class="fas fa-pencil-alt edit-icon"></i></td>
+                    <td><i ng-click="deleteEmployee(employee)" class="far fa-trash-alt delete-icon"></i></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/ng-template" id="myModalContent.html">
+    <div class="modal-body" id="modal-body">
+        <form name="myForm" novalidate class="from-group component-form">
+            <div class="row">
+                <div class="col-sm-12" class="form-header">
+                    <h5>Employee Registration</h5>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-sm-12">
+                    <label>Employee Name</label>
+                    <input name="employeeName" required type="text" class="form-control" placeholder="Employee Name"  ng-model="employee.name">
+                    <div ng-show="myForm.employeeName.$dirty">
+                        <span ng-show="myForm.employeeName.$error.required" style="color: red">Enter name</span>
+                    </div>
+                    <hr>
+                </div>
+                <div class="col-sm-12">
+                    <label>Employee Code</label>
+                    <input name="employeeCode" required type="text" class="form-control" placeholder="Employee Code"  ng-model="employee.code">
+                    <span ng-show="myForm.employeeCode.$dirty">
+                    <span ng-show="myForm.employeeCode.$error.required" style="color: red">Enter code</span>
+                </span>
+                    <hr>
+                </div>
+                <div class="col-sm-12">
+                    <label>Select Designation</label>
+                    <select ng-change="selectDesignationId()" name="designation" class="form-control btn-default" ng-model="employee.designationName">
+                        <option value="" selected ng-disabled="true">Select Designation</option>
+                        <option ng-repeat="designation in allDesignations" value='{{designation.name}}'>{{designation.name}}</option>
+                    </select>
+                    <span ng-show="myForm.designation.$dirty">
+                    <span ng-show="myForm.designation.$error.required" style="color: red">Select Designation</span>
+                </span>
+                    <hr>
+                </div>
+                <div class="col-sm-12">
+                    <label>Select Shift</label>
+                    <select ng-change="selectShiftId()" name="shiftName" class="form-control btn-default" ng-model="employee.shiftName" required>
+                        <option value="" selected>Select Shift</option>
+                        <option ng-repeat="shift in allShifts" value='{{shift.shiftName}}'>{{shift.shiftName}}</option>
+                    </select>
+                    <span ng-show="myForm.shiftName.$dirty">
+                    <span ng-show="myForm.shiftName.$error.required" style="color: red">Select Shift</span>
+                </span>
+                    <hr>
+                </div>
+                <div class="col-sm-12">
+                    <label>Enter Address</label>
+                    <input name="address" class="form-control" ng-model="employee.address" type="text" required placeholder="Address">
+                    <span ng-show="myForm.address.$dirty">
+                    <span ng-show="myForm.address.$error.required" style="color: red">Enter code</span>
+                </span>
+                    <hr>
+                </div>
+
+                <div class="col-sm-12 pull-right">
+                    <button ng-if="toggleButton=='add'" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="createEmployee()">Add Component</button>
+                    <button ng-if="toggleButton!='add'" class="btn btn-warning"  ng-disabled="myForm.$invalid" ng-click="editEmployee()">Update</button>
+                    <button class="btn btn-danger" ng-click="cancelUpdation()">cancel</button>
+                </div>
+            </div>
+        </form>
+        <!--<div class="modal-footer">-->
+            <!--<button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>-->
+            <!--<button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>-->
+        <!--</div>-->
+    </div>
+</script>
