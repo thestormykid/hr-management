@@ -30,7 +30,7 @@
                             &nbsp; - &nbsp;
                         </span>
                         <span ng-if="($index + 1) == singleDesignation.components.length">
-                            &nbsp = Rs. {{totalAmount(singleDesignation.components)}}
+                            &nbsp; = Rs. {{totalAmount(singleDesignation.components)}}
                         </span>
                     </span>
                 </td>
@@ -58,7 +58,6 @@
                 <label>Designation Name</label>
                 <input class="form-control" placeholder="Enter Designation" type="text" ng-model="designation.name"
                        required="" name="designationName">
-
                 <div ng-show="myForm.designationName.$dirty">
                     <span ng-show="myForm.designationName.$error.required" style="color: red">Enter Designation name</span>
                 </div>
@@ -83,13 +82,17 @@
                 <div class="col-sm-1 indexing">{{$index + 1}}.</div>
                 <div class="col-sm-2 indexing">
                     <div class="btn-group" uib-dropdown is-open="status.isopen" style="width: 100%">
-                        <button class="form-control btn-default" type="text" placeholder="Component Name"
-                                uib-dropdown-toggle ng-disabled="disabled" ng-if="component.componentName">
+                        <button class="form-control single-button btn-default" type="text" placeholder="Component Name"
+                                uib-dropdown-toggle ng-disabled="disabled"
+                                ><!--ng-if="component.componentName">-->
+                                 <!--ng-click="addToComponentList(component)"-->
                             {{component.componentName}}
                         </button>
-                        <input required class="form-control" id="single-button" type="text" placeholder="Component Name"
-                               name="n{{$index}}"  uib-dropdown-toggle ng-disabled="disabled" ng-model="search.nameFilter" ng-if="component.componentName == null">
-                        <ul  class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                        <!--<input required class="form-control single-button" type="text" placeholder="Component Name"-->
+                               <!--name="n{{$index}}"  uib-dropdown-toggle ng-disabled="disabled" ng-model="search.nameFilter"-->
+                               <!--ng-if="component.componentName == null">-->
+
+                        <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
                             <div ng-repeat="_component in allComponents | filter: {componentName: search.nameFilter}">
                                 <li class="menu-item" role="menuitem" ng-click="componentSelected(component, _component)"><a>
                                     {{_component.componentName}}</a></li>

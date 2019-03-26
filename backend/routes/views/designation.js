@@ -1,14 +1,15 @@
 var Designation = require('../../model/designation');
+var Employee  = require('../../model/employee');
 
 module.exports = {
 
 	getAllDesignation: function(req, res) {
 
-		Designation.find({}).populate('components').exec(function(err, allComponents) {
+		Designation.find({}).exec(function(err, allComponents) {
 
 			if (err) {
 				console.log(err);
-				HandleError(err);
+				throw err;
 			}
 
 			res.json(allComponents);
@@ -21,24 +22,48 @@ module.exports = {
 		Designation.create(designation, function(err, createdDesignation) {
 			if (err) {
 				console.log(err);
-				HandleError(err);
+				throw err;
 			}
 
 			res.json('desingation created');
 		})
 	},
 
-	deleteDesignation: function(req, res) {
-		var id = req.params.id;
-		console.log(id);
+	updateDesignation: function(req, res) {
+		var designation = req.body.designation;
 
-		Designation.deleteOne({_id: id}, function(err, status) {
+		Designation.findByIdAndUpdate(designation._id, designation, function(err, updated) {
 			if (err) {
 				console.log(err);
-				HandleError(err);
+				throw err;
 			}
 
-			res.json('designation deleted');
+			res.json('updated successfully');
+		})
+	},
+
+	deleteDesignation: function(req, res) {
+		var id = req.params.id;
+
+		Employee.find({designationId: id}, function(err, checkEmployee) {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+
+			if (checkEmployee.length != 0) {
+				res.json("can't deleted, dependancy over employee");
+
+			} else {
+				Designation.deleteOne({_id: id}, function(err, status) {
+					if (err) {
+						console.log(err);
+						throw err;
+					}
+
+					res.json('designation deleted');
+				})
+			}
 		})
 	}
 }

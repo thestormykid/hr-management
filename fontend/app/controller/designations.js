@@ -12,12 +12,14 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
         name: null,
         components: []
     };
+
     var hulla = new hullabaloo();
 
-
-
-
     $scope.componentSelected = function(component, _component) {
+        var componentCopy = {};
+        Object.assign(componentCopy, component);
+        $scope.addToComponentList(componentCopy);
+
         Object.assign(component, _component);
         removeFromComponentList(_component);
         $scope.search.nameFilter = "";
@@ -37,16 +39,18 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
             return component._id == singleComponent._id;
         })
 
-        addToComponentList(component);
+        $scope.addToComponentList(component);
     }
 
-    function addToComponentList(component) {
+    $scope.addToComponentList = function(component) {
+        console.log(component);
         if (!component.componentName) {
             return;
         }
 
-        $scope.allComponents.push(component);
+        console.log(component);
 
+        $scope.allComponents.push(component);
     }
 
 
@@ -83,17 +87,7 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
 
         }
 
-        var dataToBeAdd = {};
-        dataToBeAdd.components = [];
-
-        dataToBeAdd.name = $scope.designation.name;
-
-        _.forEach($scope.designation.components, function(component) {
-            dataToBeAdd.components.push(component._id);
-        })
-
-
-        designationService.addDesignation(dataToBeAdd)
+        designationService.addDesignation($scope.designation)
             .then(function(dataStatus) {
                 $scope.allDesignations = getAllDesignations();
                 hulla.send('data Successfully added', 'success')
@@ -113,14 +107,12 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
 
         }
 
-        designationService.updateDesignation($scope.allDesignations)
+        designationService.updateDesignation($scope.designation)
             .then(function(status) {
-                if (status == 200) {
-                    hulla.send('designation updated successfully','success');
-                    flushData();
-                    $scope.toggleButton = 'add';
+                hulla.send('designation updated successfully','success');
+                $scope.toggleButton = 'add';
+                flushData();
 
-                }
             }, function(error) {
                 hulla.send('designation not updated','danger');
 
@@ -129,7 +121,7 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
 
     function checkDesignationNameForDuplication() {
         var x = _.find($scope.allDesignations, function(singleDesignation) {
-            if ($scope.designation.id != singleDesignation.id) {
+            if ($scope.designation._id != singleDesignation._id) {
                 return $scope.designation.name == singleDesignation.name;
             }
 
@@ -140,9 +132,15 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
 
     $scope.editSingleDesignation = function(singleDesignation) {
         $scope.toggleButton = 'edit';
-        $scope.designation = singleDesignation;
+        $scope.designation = {
+            name: singleDesignation.name,
+            _id: singleDesignation._id,
+            components:[]
+        }
 
         _.forEach(singleDesignation.components, function(singleComponent) {
+            var obj = Object.assign({}, singleComponent);
+            $scope.designation.components.push(obj);
             removeFromComponentList(singleComponent);
 
         });
@@ -205,7 +203,7 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
         designationService.getAllDesignations()
             .then(function (allDesignation) {
                 $scope.allDesignations = allDesignation;
-                console.log(allDesignation);
+
             }, function (error) {
                 console.log("error occured in fetching the designations");
 

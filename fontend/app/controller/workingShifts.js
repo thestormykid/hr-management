@@ -13,7 +13,7 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
         if (!$scope.shiftDetails) {
             return;
         }
-        console.log($scope.shiftDetails);
+
         var shift = JSON.parse($scope.shiftDetails);
 
         $scope.factor.shiftName = shift.shiftName;
@@ -63,7 +63,7 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
         }
 
         Object.assign(_factor, $scope.factor);
-        console.log(_factor);
+
         workingShiftService.editFactorDetails(_factor)
             .then(function(editedFactors) {
                 hulla.send('factor updated successfully', 'success');
@@ -77,14 +77,16 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
 
     $scope.editFactor = function(factor) {
         Object.assign($scope.factor, factor);
+
         $scope.shiftDetails = _.find($scope.allShifts, function(singleShift) {
-            return singleShift.shiftName = factor.shiftName;
+            return singleShift.shiftName == factor.shiftName;
         })
+
         delete $scope.shiftDetails['$$hashKey'];
         $scope.shiftDetails = JSON.stringify($scope.shiftDetails);
         $scope.toggleButton = 'edit';
 
-    }
+    x}
 
     $scope.deleteFactor = function(factorNeedToBeDeleted) {
         var findUpdatedFactor;
@@ -142,6 +144,7 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
         workingShiftService.getAllFactors()
             .then(function(allFactors) {
                 $scope.allFactors = allFactors;
+                console.log($scope.allFactors);
 
             }, function(error) {
                 console.log('something went wrong while fetching the data');

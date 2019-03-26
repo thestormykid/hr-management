@@ -127,7 +127,7 @@
                     <tr ng-repeat="factor in allFactors | filter: { shiftName: shiftNameFilter,factorName: factorNameFilter,
                             type: factorTypeFilter} : startsWith | filter: {timeType: timeTypeFilter} : startsWith">
                         <th scope="row">{{$index + 1}}.</th>
-                        <td>{{factor.shiftName | uppercase }}</td>
+                        <td>{{factor.shiftId.shiftName | uppercase }}</td>
                         <td>{{factor.factorName | uppercase}}</td>
                         <td ng-if="factor.type=='reduction'" style="color: red">{{factor.type | uppercase}}</td>
                         <td ng-if="factor.type!=='reduction'" style="color: forestgreen">{{factor.type | uppercase}}</td>

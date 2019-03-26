@@ -13,7 +13,7 @@ var routes = {
 }
 
 
-router.post('/', routes.views.attendance.index);
+// router.get('/test', routes.views.factor.index);
 
 // salary components
 router.get('/getAllComponents', routes.views.salaryComponent.getAllComponents);
@@ -24,6 +24,7 @@ router.delete('/deleteComponent/:id', routes.views.salaryComponent.deleteCompone
 // designation
 router.get('/getAllDesignation', routes.views.designation.getAllDesignation);
 router.post('/addDesignation', routes.views.designation.addDesignation);
+router.put('/updateDesignation', routes.views.designation.updateDesignation);
 router.delete('/deleteDesignation/:id', routes.views.designation.deleteDesignation);
 
 // shift

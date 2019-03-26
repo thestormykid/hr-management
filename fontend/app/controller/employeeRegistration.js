@@ -1,9 +1,8 @@
 management.controller('employeeRegistrationCtrl',['$scope', 'designationService', 'createShiftService', 'employeeService',
     '$uibModal', function($scope, designationService, createShiftService, employeeService, $uibModal) {
 
-        var hulla = new hullabaloo();
-        $scope.allEmployees = [];
-
+    var hulla = new hullabaloo();
+    $scope.allEmployees = [];
 
     $scope.deleteEmployee = function(employee) {
 
@@ -18,35 +17,10 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
             })
     }
 
-    $scope.edit = function(employee) {
-        var modalInstance = $uibModal.open({
-            animation: true,
-            ariaLabelledBy: 'modal-title',
-            ariaDescribedBy: 'modal-body',
-            templateUrl: 'myModalContent.html',
-            controller: 'ModalInstanceCtrl',
-            controllerAs: '$scope',
-            windowClass: 'show',
-            resolve: {
-                employee: function () {
-                    return employee;
-                }
-            }
-        })
-
-        modalInstance.result.then(function(allEmployee) {
-            $scope.allEmployees = getData();
-            hulla.send('employee details updated', 'info');
-
-        }, function() {
-
-        });
-
-    }
-
     $scope.open = function (employee) {
         var dataNeedToBeSend = {}
         dataNeedToBeSend.button = 'add';
+        dataNeedToBeSend.allEmployees = $scope.allEmployees;
 
         if (employee) {
             dataNeedToBeSend.employeeDetails = {};
@@ -70,10 +44,16 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
             }
         });
 
-        modalInstance.result.then(function (allEmployees) {
-            $scope.allEmployees = getData();
-            hulla.send('employees added successfully', 'success');
+        modalInstance.result.then(function(status) {
+            if (status=='update') {
+                hulla.send('details updated', 'success');
 
+            } else {
+                hulla.send('employees added successfully', 'success');
+
+            }
+
+            $scope.allEmployees = getData();
         }, function() {
 
         });
@@ -107,6 +87,7 @@ management.controller('ModalInstanceCtrl', function ($uibModalInstance, designat
     $scope.employee = data.employeeDetails;
     var hulla = new hullabaloo();
     $scope.toggleButton  = data.button;
+    $scope.allEmployees = data.allEmployees
 
     $scope.selectShiftId = function() {
         if (!$scope.employee.shiftName) {
@@ -117,7 +98,7 @@ management.controller('ModalInstanceCtrl', function ($uibModalInstance, designat
             return _shift.shiftName == $scope.employee.shiftName;
         })
 
-        $scope.employee.shiftId = shiftName.id;
+        $scope.employee.shiftId = shiftName._id;
     }
 
     $scope.selectDesignationId = function() {
@@ -129,17 +110,22 @@ management.controller('ModalInstanceCtrl', function ($uibModalInstance, designat
             return _designation.name == $scope.employee.designationName;
         })
 
-
-        $scope.employee.designationId = designation.id;
+        $scope.employee.designationId = designation._id;
     }
 
     $scope.createEmployee = function() {
+
+        if(checkEmployeeCodeForDuplication()) {
+            hulla.send('Employee code exists', 'info');
+            return;
+        }
+
         var _employee = {};
         Object.assign(_employee, $scope.employee);
 
         employeeService.addEmployee(_employee)
             .then(function(allEmployees) {
-                $uibModalInstance.close(allEmployees);
+                $uibModalInstance.close('add');
 
             }, function(error) {
                 console.log('not able to add employees');
@@ -147,13 +133,32 @@ management.controller('ModalInstanceCtrl', function ($uibModalInstance, designat
             })
     }
 
+    function checkEmployeeCodeForDuplication() {
+
+        for(var x = 0;x < $scope.allEmployees.length;x++) {
+            if ($scope.allEmployees[x].code == $scope.employee.code) {
+                if ($scope.allEmployees[x]._id != $scope.employee._id) {
+                    return true;
+
+                }
+            }
+        }
+
+        return false;
+    }
+
     $scope.editEmployee = function() {
+        if (checkEmployeeCodeForDuplication()) {
+            hulla.send('Employee code exists', 'info');
+            return;
+        }
+
         var _employee = {};
         Object.assign(_employee, $scope.employee);
 
         employeeService.updateEmployee(_employee)
             .then(function(allEmployees) {
-                $uibModalInstance.close(allEmployees)
+                $uibModalInstance.close('update');
 
             }, function () {
 
@@ -180,7 +185,6 @@ management.controller('ModalInstanceCtrl', function ($uibModalInstance, designat
         createShiftService.getAllShifts()
             .then(function(allShifts) {
                 $scope.allShifts = allShifts;
-                console.log($scope.allShifts);
 
             }, function (error) {
                 console.log('not able to fetch shifts');

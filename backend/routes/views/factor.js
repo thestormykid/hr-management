@@ -1,7 +1,18 @@
 var Factor = require('../../model/factor');
 
-
 module.exports = {
+
+	index: function(req, res) {
+
+		Factor.find().populate('shiftId').exec(function(err, factor) {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+
+			res.json(factor);
+		})
+	},
 
 	addFactor: function(req, res) {
 		var factor = req.body.factor;
@@ -20,7 +31,7 @@ module.exports = {
 
 	getAllFactor: function(req, res) {
 
-		Factor.find({}, function(err, allFactors) {
+		Factor.find({}).populate('shiftId').exec(function(err, allFactors) {
 			if (err) {
 				console.log(err);
 				throw err;

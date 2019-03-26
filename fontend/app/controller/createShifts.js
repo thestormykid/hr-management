@@ -143,13 +143,13 @@ management.controller('createShiftsCtrl', ['$scope', 'createShiftService', funct
         }
 
         createShiftService.removeShift(shiftNeedToBeDeleted)
-            .then(function(removedShift) {
+            .then(function(status) {
                 if (shiftNeedToBeDeleted == findUpdatedShift) {
                     flushDetails()
                 }
 
                 $scope.allShifts = getData();
-                hulla.send('shift deleted successfully','success');
+                hulla.send(status,'success');
 
                 }, function(error) {
                     hulla.send('item not deleted', 'danger')

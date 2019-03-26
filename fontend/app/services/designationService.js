@@ -53,21 +53,26 @@ management.factory('designationService', ['$http','$q', function($http, $q) {
             return promise.promise;
         },
 
-        updateDesignation: function(allDesignation) {
+        updateDesignation: function(designation) {
             var promise = $q.defer();
 
+            console.log(designation);
 
-            if (allDesignation) {
-                setAllDesignationData(allDesignation);
-                promise.resolve(200);
+            $http({
+                url: `${BACKEND}/updateDesignation`,
+                method: 'PUT',
+                data: {
+                    designation: designation
+                }
+            }).then(function(success) {
+                promise.resolve(success.data);
 
-            } else {
-                promise.reject(400);
+            }, function(error) {
+                promise.reject(error.data);
 
-            }
+            })
 
             return promise.promise;
-
         },
 
         deleteDesignation: function(designation_id) {
