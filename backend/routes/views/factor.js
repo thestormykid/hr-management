@@ -2,18 +2,6 @@ var Factor = require('../../model/factor');
 
 module.exports = {
 
-	index: function(req, res) {
-
-		Factor.find().populate('shiftId').exec(function(err, factor) {
-			if (err) {
-				console.log(err);
-				throw err;
-			}
-
-			res.json(factor);
-		})
-	},
-
 	addFactor: function(req, res) {
 		var factor = req.body.factor;
 
@@ -58,8 +46,6 @@ module.exports = {
 	removeFactor: function(req, res) {
 		var id = req.params.id;
 
-		console.log(id);
-
 		Factor.deleteOne({_id: id}, function(err, factorRemoved) {
 			if (err) {
 				console.log(err);
@@ -69,6 +55,22 @@ module.exports = {
 			res.json(factorRemoved);
 		})
 
+	},
+
+	getSelectedFactors: function(req, res) {
+		var shiftId = req.query.id;
+		// console.log(req.query);
+		// console.log(id);
+		Factor.find({shiftId: shiftId}, function(err, selectedFactors) {
+		  	if (err) {
+		  		console.log(err);
+		  		throw err;
+		  	}
+
+			console.log(selectedFactors);
+
+		  	res.json(selectedFactors);
+		})
 	}
 
 }

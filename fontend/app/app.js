@@ -3,15 +3,20 @@ window.management = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'ui.ro
 
 management.config(['$stateProvider', function($stateProvider) {
     $stateProvider
+        .state('index', {
+            url: '/',
+            templateUrl:'./app/templates/login.html',
+            controller: 'loginCtrl'
+        })
         .state('home', {
             url: '/home',
             templateUrl: './app/templates/home.html',
             controller: 'homeCtrl'
         })
-        .state('attendance-capturing', {
-            url: '/attendance-capturing',
-            templateUrl: './app/templates/attendanceCapturing.html',
-            controller: 'attendanceCapturingCtrl'
+        .state('attendance', {
+            url: '/attendance',
+            templateUrl: './app/templates/attendance.html',
+            controller: 'attendanceCtrl'
         })
         .state('designation', {
             url: '/designation',

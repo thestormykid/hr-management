@@ -43,27 +43,37 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
     }
 
     $scope.addToComponentList = function(component) {
-        console.log(component);
         if (!component.componentName) {
             return;
         }
-
-        console.log(component);
 
         $scope.allComponents.push(component);
     }
 
 
     $scope.addDesignationRow = function() {
+        // if($scope.designation.components)
         var component = {};
         $scope.designation.components.push(component);
 
     }
 
-    $scope.showDesignationForm = function () {
-        $scope.displayDesignation = true;
-        $scope.myForm.$setPristine();
+    $scope.showDesignationForm = function() {
 
+        $scope.myForm.$setPristine();
+        var component = _.find($scope.allComponents, function(component) {
+            return component.componentName == 'basic';
+        })
+
+        if (!component) {
+            hulla.send('create basic component first', 'info');
+            return;
+
+        }
+
+        $scope.displayDesignation = true;
+        $scope.designation.components.push(component);
+        $scope.componentSelected({}, component);
     }
 
     $scope.deleteSingleDesignation = function(_designation) {
@@ -87,10 +97,19 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
 
         }
 
+        if(!checkContainsBasic()) {
+            hulla.send('add basic component', 'info');
+            return;
+        }
+
+        var salary = $scope.totalAmount($scope.designation.components);
+        $scope.designation.amount = salary;
+
         designationService.addDesignation($scope.designation)
             .then(function(dataStatus) {
                 $scope.allDesignations = getAllDesignations();
-                hulla.send('data Successfully added', 'success')
+                $scope.allComponents = getAllComponents();
+                hulla.send('data Successfully added', 'success');
                 flushData();
 
             }, function(error) {
@@ -100,9 +119,14 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
     }
 
     $scope.editData = function() {
-
         if(checkDesignationNameForDuplication()) {
             hulla.send('this designation already exists','danger');
+            return;
+
+        }
+
+        if (!checkContainsBasic()) {
+            hulla.send('add basic salary', 'info');
             return;
 
         }
@@ -117,6 +141,12 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
                 hulla.send('designation not updated','danger');
 
             })
+    }
+
+    function checkContainsBasic() {
+        return _.find($scope.designation.components, function(component) {
+            return component.componentName == 'basic';
+        })
     }
 
     function checkDesignationNameForDuplication() {
@@ -173,23 +203,19 @@ management.controller('designationCtrl', ['$scope', 'designationService', 'salar
         })
 
         _.forEach(componentList, function(_component) {
-
-
             if (_component.componentType == 'allowance') {
                 if (_component.salaryType == 'amount') {
                     totalSalary += _component.salaryValue;
-                }   else {
-                    totalSalary += totalSalary*(1 + basicSalary.salaryValue/100);
 
+                } else {
+                    totalSalary = totalSalary * (1 + (_component.salaryValue / 100));
                 }
-
             } else {
-                if (_component.salaryType=='amount') {
+                if (_component.salaryType == 'amount') {
                     totalSalary -= _component.salaryValue;
 
-                }   else {
-
-                    totalSalary -= totalSalary*(1 + basicSalary.salaryValue/100);
+                } else {
+                    totalSalary = totalSalary * (1 - basicSalary.salaryValue / 100);
 
                 }
             }

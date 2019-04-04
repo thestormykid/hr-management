@@ -41,8 +41,8 @@ module.exports = {
 				throw err;
 			}
 
-			if (check.length != 0) {
-				res.json("can't deleted, dependancy over shift factor");
+			if (checkShift.length != 0) {
+				return res.json("can't deleted, dependancy over shift factor");
 			}
 
 			// check dependancy with employee
@@ -53,9 +53,8 @@ module.exports = {
 				}
 
 				if (checkEmployee.length != 0) {
-					res.json("can't deleted, dependancy over employee");
+					return res.json("can't deleted, dependancy over employee");
 
-				} else {
 					Shift.deleteOne({_id: shiftNeedToBeDeleteId}, function(err, deletedShift) {
 						if (err) {
 							console.log(err);

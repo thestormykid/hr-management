@@ -1,20 +1,5 @@
 management.factory('workingShiftService', ['$http', '$q',  function($http, $q) {
 
-    function setAllFactors(allFactors) {
-        localStorage.setItem('shiftFactor', JSON.stringify(allFactors));
-
-    }
-
-    function getAllFactors() {
-        return JSON.parse(localStorage.getItem('shiftFactor'));
-
-    }
-
-    function getAllShifts() {
-        return JSON.parse(localStorage.getItem('workingShifts'));
-
-    }
-
     return {
 
         createShiftFactor: function(singleFactor) {
@@ -91,6 +76,24 @@ management.factory('workingShiftService', ['$http', '$q',  function($http, $q) {
 
             })
 
+
+            return promise.promise;
+        },
+
+        getSelectedFactors: function(shiftId) {
+            var promise = $q.defer();
+
+            $http({
+                url: `${BACKEND}/getSelectedFactors?id=${shiftId}`,
+                method: 'GET'
+
+            }).then(function(success) {
+                promise.resolve(success.data);
+
+            }, function(error) {
+                promise.reject(error.data);
+
+            })
 
             return promise.promise;
         }

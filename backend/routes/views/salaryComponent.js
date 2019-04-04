@@ -45,9 +45,7 @@ module.exports = {
 
 	updateComponent: function(req, res) {
 		var updatedComponent = JSON.parse(req.body.component);
-		delete updatedComponent['$$hashK	ey'];
-
-		console.log(updatedComponent);
+		delete updatedComponent['$$hashKey'];
 
 		salaryComponent.findByIdAndUpdate(updatedComponent._id, updatedComponent, function(err, status) {
 			if (err) {

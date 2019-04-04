@@ -52,14 +52,14 @@ label {
     display: block;
 }
 
-.dropdown-menu {
-    text-align: center;
-    margin-bottom: 1px;
-    border: 1px solid lavenderblush;
-    box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    overflow-y: scroll;
-    height: 10em;
-}
+/*.dropdown-menu {*/
+    /*text-align: center;*/
+    /*margin-bottom: 1px;*/
+    /*border: 1px solid lavenderblush;*/
+    /*box-shadow: 0 6px 12px rgba(0,0,0,.175);*/
+    /*overflow-y: scroll;*/
+    /*height: 10em;*/
+/*}*/
 
 .dropdown-menu a{
     color: #262626;
@@ -197,4 +197,27 @@ nav {
     height: 0;
     border-color: transparent;
     border-style: solid;
+}
+
+.nav-link:focus {
+    color: lawngreen !important;
+}
+
+.nav-link:hover {
+    color: white !important;
+}
+
+.full button span {
+    background-color: limegreen;
+    border-radius: 32px;
+    color: black;
+}
+.partially button span {
+    background-color: orange;
+    border-radius: 32px;
+    color: black;
+}
+
+.table-item {
+    padding-top: 1.4em !important;
 }

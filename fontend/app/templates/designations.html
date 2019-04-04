@@ -81,9 +81,9 @@
                 <div  class="col-sm-1"></div>
                 <div class="col-sm-1 indexing">{{$index + 1}}.</div>
                 <div class="col-sm-2 indexing">
-                    <div class="btn-group" uib-dropdown is-open="status.isopen" style="width: 100%">
+                    <div  class="btn-group" uib-dropdown is-open="status.isopen" style="width: 100%">
                         <button class="form-control single-button btn-default" type="text" placeholder="Component Name"
-                                uib-dropdown-toggle ng-disabled="disabled"
+                                uib-dropdown-toggle ng-disabled="disabled || component.componentName=='basic'"
                                 ><!--ng-if="component.componentName">-->
                                  <!--ng-click="addToComponentList(component)"-->
                             {{component.componentName}}
@@ -106,7 +106,7 @@
                 </div>
                 <div class="col-sm-2 indexing">
                     <select class="form-control btn-default" ng-model="component.salaryType"
-                            ng-disabled="component.componentName == null || component.editableType=='non-editable' ">
+                            ng-disabled="component.componentName == null || component.editableType=='non-editable' || component.componentName=='basic' ">
                         <option value="" selected ng-disabled="true">Salary Type</option>
                         <option value="amount">Amount</option>
                         <option value="percentage">Percentage</option>
@@ -144,7 +144,7 @@
                     </select>
                 </div>
 
-                <i ng-click="deleteRow(component)" class="far fa-times-circle delete-row indexing"></i>
+                <i ng-if="component.componentName!='basic'" ng-click="deleteRow(component)" class="far fa-times-circle delete-row indexing"></i>
                 <!--<div class="col-sm-1 delete-row" ng-click="deleteRow(component)">X</div>-->
             </div>
         </div>

@@ -5,7 +5,8 @@ var Schema = new mongoose.Schema({
     salaryType: {type: String, required: true},
     salaryValue: {type: Number, required: true},
     componentType: {type: String, required: true},
-    editableType: {type: String, required: true}
+    editableType: {type: String, required: true},
+    isDeleteable: {type: Boolean, required: true}
 })
 
 module.exports = mongoose.model('salaryComponent', Schema);

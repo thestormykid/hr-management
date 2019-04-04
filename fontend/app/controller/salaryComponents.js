@@ -9,6 +9,7 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
     $scope.component.componentType = 'allowance';
     $scope.component.editableType = 'editable';
     $scope.component.componentId;
+    $scope.component.isDeleteable = false;
 
     $scope.toggleButton = 'add';
     var hulla = new hullabaloo();
@@ -126,6 +127,7 @@ management.controller('salaryComponentsCtrl', ['$uibModal', '$log', '$scope','sa
         $scope.component.salaryType = 'amount';
         $scope.component.componentType = 'allowance';
         $scope.component.editableType = 'editable';
+        $scope.component.isDeleteable = false;
         $scope.toggleButton = 'add';
         $scope.myForm.$setPristine();
     }

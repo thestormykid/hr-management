@@ -1,4 +1,4 @@
-management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftService', 'createShiftService',
+management.controller('workingShiftsCtrl', ['$scope', '$uibModal', 'workingShiftService', 'createShiftService',
     function($scope, $uibModal, workingShiftService, createShiftService) {
 
     $scope.factor = {};
@@ -27,6 +27,12 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
 
         }
 
+        if(checkForFactorType()) {
+            hulla.send('factorType already exists for shift name', 'info');
+            return;
+
+        }
+
         workingShiftService.createShiftFactor($scope.factor)
             .then(function(insertedFactor) {
                 hulla.send('shift factor created successfully', 'success');
@@ -37,6 +43,22 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
                 console.log('shift cannot be created');
 
             })
+    }
+
+    function checkForFactorType(factor) {
+        var factorType = $scope.factor.type;
+
+        var x = _.find($scope.allFactors, function(singleFactor) {
+            if ($scope.factor.shiftName == singleFactor.shiftName) {
+                if (!factor) {
+                    return factorType == singleFactor.type;
+                } else if (factor._id != singleFactor._id) {
+                    return factorType == singleFactor.type;
+                }
+            }
+        })
+
+        return x;
     }
 
     function checkForDuplicateFactorName(factor) {
@@ -58,6 +80,12 @@ management.controller('workingShiftsCtrl', ['$scope', '$uibModal','workingShiftS
 
         if (checkForDuplicateFactorName(_factor)) {
             hulla.send('same factor name exists with same shift name', 'info')
+            return;
+
+        }
+
+        if (checkForFactorType()) {
+            hulla.send('factorType already exists for shift name', 'info');
             return;
 
         }

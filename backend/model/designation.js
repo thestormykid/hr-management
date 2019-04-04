@@ -9,7 +9,8 @@ var schema = new mongoose.Schema({
 		salaryValue: {type: Number, required: true},
 		componentType: {type: String, required: true},
 		editableType: {type: String, required: true}
-	}]
+	}],
+	amount: {type: Number, required: true}
 })
 
 module.exports = mongoose.model('designation', schema);

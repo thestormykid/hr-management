@@ -31,6 +31,7 @@ module.exports = {
 
 	updateDesignation: function(req, res) {
 		var designation = req.body.designation;
+		delete designation['$$hashKey'];
 
 		Designation.findByIdAndUpdate(designation._id, designation, function(err, updated) {
 			if (err) {

@@ -159,9 +159,8 @@ management.controller('createShiftsCtrl', ['$scope', 'createShiftService', funct
     }
 
     $scope.formatTime = function(time) {
-        var hours = new Date(time).getHours();
-        var minutes = new Date(time).getMinutes();
-        return (hours + ':' + minutes);
+        return moment(time).format('HH:mm');
+
     }
 
     $scope.cancelShift = function() {

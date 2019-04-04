@@ -1,5 +1,7 @@
 var Employee = require('../../model/employee');
 
+
+
 module.exports = {
 
 	addEmployee: function(req, res) {
@@ -19,7 +21,7 @@ module.exports = {
 
 	getAllEmployee: function(req, res) {
 
-		Employee.find({}).populate('designationId','name').populate('shiftId', 'shiftName').exec(function(err, allEmployee) {
+		Employee.find({}).populate('designationId').populate('shiftId').exec(function(err, allEmployee) {
 			if (err) {
 				console.log(err);
 				throw err;
@@ -56,5 +58,4 @@ module.exports = {
 		})
 
 	}
-
 }

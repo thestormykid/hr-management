@@ -70,6 +70,17 @@
                         </select>
                         <hr>
                     </div>
+                    <div class="col-sm-12">
+                        <div class="form-check-inline">
+                        <span style="font-family: Roboto">
+                            Is Deleteable &nbsp;-&nbsp;&nbsp;
+                        </span>
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" value="" ng-model="component.isDeleteable">
+                            </label>
+                        </div>
+                        <hr>
+                    </div>
                     <div class="col-sm-12 pull-right">
                         <button ng-if="toggleButton=='add'" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="addSalaryComponent()">Add Component</button>
                         <button ng-if="toggleButton!='add'" class="btn btn-danger"  ng-disabled="myForm.$invalid" ng-click="editComponentDetails()">Update</button>
@@ -140,7 +151,8 @@
                             <td>{{component.editableType | uppercase}}</td>
                             <td ng-if="component.editableType=='editable'" ><i ng-click="editComponent(component)" class="fas fa-pencil-alt edit-icon"></i></td>
                             <td ng-if="component.editableType=='non-editable'" ><i class="fas fa-pencil-alt" style="color: grey"></i></td>
-                            <td><i ng-click="deleteSingleComponent(component)" class="far fa-trash-alt delete-icon"></i></td>
+                            <td ng-if="!component.isDeleteable"><i class="far fa-trash-alt" style="color: grey"></i></td>
+                            <td><i ng-if="component.isDeleteable" ng-click="deleteSingleComponent(component)" class="far fa-trash-alt delete-icon"></i></td>
                         </tr>
                     </tbody>
                 </table>

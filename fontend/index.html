@@ -1,10 +1,9 @@
 <html>
     <head>
         <title>hr management</title>
-
         <!--cdn and node modules-->
         <script src="./node_modules/angular/angular.min.js"></script>
-        <script src="./node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
+        <script src="./node_modules/ui-bootstrap4/dist/ui-bootstrap-tpls.js"></script>
         <script src="./node_modules/angular-animate/angular-animate.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.22/angular-ui-router.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
@@ -16,7 +15,8 @@
         <script src="./app/app.js"></script>
 
         <!--controllers-->
-        <script src="./app/controller/attendanceCapturing.js"></script>
+        <script src="./app/controller/login.js"></script>
+        <script src="app/controller/attendance.js"></script>
         <script src="./app/controller/designations.js"></script>
         <script src="./app/controller/employeeRegistration.js"></script>
         <script src="./app/controller/reports.js"></script>
@@ -34,11 +34,11 @@
         <script src="app/services/workingShiftService.js"></script>
         <script src="app/services/createShiftService.js"></script>
         <script src="app/services/employeeService.js"></script>
+        <script src="app/services/attendanceService.js"></script>
 
-
-        <link rel="stylesheet" href="app/stylesheet/main.css">
-        <script src="app/controller/workingShifts.js"></script>
         <!--<script src="../node_modules/angular/angular.js"></script>-->
+        <link rel="stylesheet" href="app/stylesheet/main.css">
+
     </head>
 
     <body ng-app="myApp">
@@ -51,28 +51,32 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
+                        <a class="nav-link" ui-sref="index">Login</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" ui-sref="salary-component">Salary Component</a>
                     </li>
-                    <li>
+                    <li class="nav-item">
                         <a class="nav-link" ui-sref="designation">Designation</a>
                     </li>
-
-                    <li>
+                    <li class="nav-item">
                         <a class="nav-link" ui-sref="create-shifts">Create shifts</a>
                     </li>
-
-                    <li>
+                    <li class="nav-item">
                         <a class="nav-link" ui-sref="working-shifts">Working Shifts</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" ui-sref="employee-registration">Employee Registration</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" ui-sref="attendance">Attendance</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" ui-sref="reports">Reports</a>
                     </li>
                 </ul>
             </div>
         </nav>
-
-
         <ui-view></ui-view>
     </body>
 </html>

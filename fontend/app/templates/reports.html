@@ -1,0 +1,117 @@
+<div class="container">
+    <h4 style="text-align: center">View Reports</h4>
+    <div class="employee-filters">
+        <form novalidate name="myForm" class="form-group">
+            <div class="row">
+                <div class="col-sm-3 indexing">
+                    <label>Select Designation</label>
+                    <select class="form-control btn-default" ng-model="filter.designation">
+                        <option value="" selected ng-disabled="true">Select Designation</option>
+                        <option ng-repeat="designation in allDesignations" value="{{designation}}">{{designation.name}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 indexing">
+                    <label>Select Shift Name</label>
+                    <select class="form-control btn-default" ng-model="filter.shift">
+                        <option value="" selected ng-disabled="true">Shift</option>
+                        <option ng-repeat="shift in allShifts" value="{{shift}}">{{shift.shiftName}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary form-control" ng-click="findEmployees()">
+                        SUBMIT
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div ng-if="allEmployees.length!=0" class="employee-list">
+        <div class="card employee-details">
+            <table class="table table-borderless">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">E. Name</th>
+                    <th scope="col">E. Code</th>
+                    <th scope="col">Designation</th>
+                    <th scope="col">Shift</th>
+                    <th scope="col">Mark</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="employee in allEmployees | filter: { name: nameFilter, code: codeFilter,
+                                deisngationName: designationFilter, shiftName: shiftFilter} : startsWith">
+                    <th class="table-item" scope="row">{{$index + 1}}</th>
+                    <td class="table-item">{{employee.name | uppercase }}</td>
+                    <td class="table-item">{{employee.code | uppercase}}</td>
+                    <td class="table-item">{{employee.designationId.name}}</td>
+                    <td class="table-item">{{employee.shiftId.shiftName}}</td>
+                    <td class="table-item"><i ng-click="open(employee)" class="fas fa-pencil-alt edit-icon"></i></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="markAttendance.html">
+    <div class="modal-body" id="modal-body">
+        <form name="myForm" novalidate class="from-group component-form">
+            <div class="row">
+                <div class="col-sm-12" class="form-header">
+                    <h5>Mark Attendance</h5>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label>Start Date</label>
+                            <p class="input-group">
+                                <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="attendance.startingDate"
+                                       is-open="popup1.opened" ng-required="true" close-text="Close" ng-change="setMinDate()" />
+                                <span class="input-group-btn">
+                                    <i class="fas fa-calendar-alt input-group-text" ng-click="open1()"></i>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label>End Date</label>
+                            <p class="input-group">
+                                <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="attendance.endingDate"
+                                       is-open="popup2.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                                <span class="input-group-btn">
+                                    <i class="fas fa-calendar-alt input-group-text" ng-click="open2()"></i>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label>Starting Time</label>
+                            <input type="time" name="attendance.startingTime" class="form-control shift-time" required
+                                   ng-model="attendance.startingTime">
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Shift ending Time</label>
+                            <input type="time" name="attendance.endingTime" class="form-control shift-time" required
+                                   ng-model="attendance.endingTime">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <div class="col-sm-12 pull-right">
+                    <button class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="markAttendance()">Mark</button>
+                    <button class="btn btn-danger" ng-click="cancelUpdation()">cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</script>
