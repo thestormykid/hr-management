@@ -4,17 +4,17 @@
         <form name="myForm" class="form-group card component-form" novalidate>
             <div class="row">
                 <div class="col-sm-12" class="form-header">
-                    <h5>Sign-up</h5>
+                    <h5>Login</h5>
                 </div>
             </div>
             <br>
             <div class="row">
                 <div class="col-sm-12">
-                    <label>User Name</label>
-                    <input name="userName" required="" type="text" class="form-control" placeholder="User Name"
-                           ng-model="user.userName">
-                    <div ng-show="myForm.userName.$dirty">
-                        <span ng-show="myForm.userName.$error.required" style="color: red">Enter name</span>
+                    <label>Employee Code</label>
+                    <input name="code" required="" type="text" class="form-control" placeholder="Employee Code"
+                           ng-model="user.code">
+                    <div ng-show="myForm.code.$dirty">
+                        <span ng-show="myForm.code.$error.required" style="color: red">Enter code</span>
                     </div>
                     <hr>
                 </div>
@@ -28,18 +28,7 @@
                     <hr>
                 </div>
                 <div class="col-sm-12">
-                    <div class="form-check-inline">
-                        <span style="font-family: Roboto">
-                            Is Admin &nbsp;-&nbsp;&nbsp;
-                        </span>
-                        <label class="form-check-label">
-                            <input type="checkbox" class="form-check-input" value="" ng-model="user.isAdmin">
-                        </label>
-                    </div>
-                    <hr>
-                </div>
-                <div class="col-sm-12">
-                    <button class="btn btn-primary" ng-click="addUser()"ng-disabled="myForm.$invalid">
+                    <button class="btn btn-primary" ng-click="login()"ng-disabled="myForm.$invalid">
                         submit
                     </button>
                 </div>

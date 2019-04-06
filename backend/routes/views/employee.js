@@ -1,22 +1,61 @@
 var Employee = require('../../model/employee');
+const JWT = require("jsonwebtoken");
+const User = require("../../model/user");
+const { JWT_SECRET } = require("../../config");
+var ObjectId = require('mongodb').ObjectID;
+
+signToken = user => {
+  return JWT.sign(
+    {
+      iss: "Hanu",
+      sub: user.id,
+      iat: new Date().getTime(), //current Time
+      exp: new Date().setDate(new Date().getDate() + 1) //current day +1
+    },
+    JWT_SECRET
+  );
+};
 
 
 
 module.exports = {
 
 	addEmployee: function(req, res) {
-		var factor = req.body.employee;
+		var employee = req.body.employee;
 
-		Employee.create(factor, function(err, addedFactor) {
+		Employee.findOne({code: employee.code}, function(err, checkEmployeeCode) {
 			if (err) {
 				console.log(err);
 				throw err;
 			}
 
-			console.log(addedFactor);
+			if (checkEmployeeCode) {
+				return res.json({message: 'exists'});
 
-			res.json(addedFactor);
+			} else {
+
+		    	var newEmployee = new Employee(employee);
+
+		    	newEmployee.save(function(err, employeeCreated) {
+		    		if (err) {
+		    			console.log(err);
+		    			res.json('asdasdasd');
+		    			throw err;
+		    		}
+
+		    		var token = signToken(employeeCreated);
+
+		    		return res.json({token: token, user: employeeCreated});
+		    	})
+			}
 		})
+	},
+
+	signIn: function(req, res) {
+
+    	const token = signToken(req.user);
+
+	    res.json({ token: token, user: req.user });
 	},
 
 	getAllEmployee: function(req, res) {

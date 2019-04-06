@@ -1,12 +1,20 @@
-management.controller('loginCtrl',['$scope', function($scope) {
+management.controller('loginCtrl',['$scope', '$rootScope', 'employeeService', '$location', function($scope, $rootScope,
+                                                                                                    employeeService, $location) {
 
-    $scope.user = {}
-    $scope.user.isAdmin = false;
+    $scope.user = {};
+    var hulla = new hullabaloo();
 
-    $scope.addUser = function() {
+    $scope.login = function() {
 
-        console.log($scope.user)
+        employeeService.login($scope.user)
+            .then(function(success) {
+                hulla.send(`Welcome ${success.user.name}`, 'success');
+                $rootScope.setEmployee(success);
 
+            }, function(error) {
+                console.log(error);
+
+            })
     }
 
 }])

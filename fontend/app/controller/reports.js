@@ -30,11 +30,20 @@ management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationS
             })
     }
 
+    $scope.formatTime = function(time) {
+      return moment(time).format('HH:mm');
+
+    }
+
+    $scope.formatDate = function(date) {
+        return moment(date).format('DD/MM/YYYY');
+
+    }
+
     function getAllDesignations() {
         designationService.getAllDesignations()
             .then(function(allDesignations) {
                 $scope.allDesignations = allDesignations;
-                // console.log()
 
             }, function(failure) {
                 console.log("can't fetch all designations");

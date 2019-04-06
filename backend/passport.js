@@ -3,12 +3,12 @@ const JWTStartegy     = require("passport-jwt").Strategy;
 const LocalStartegy   = require("passport-local").Strategy;
 const { ExtractJwt }  = require("passport-jwt");
 const { JWT_SECRET }  = require("./config");
-const User            = require("./model/user");
+const User            = require("./model/employee");
 
 passport.use(
   new JWTStartegy(
     {
-      jwtFromRequest: ExtractJwt.fromHeader("authoriation"),
+      jwtFromRequest: ExtractJwt.fromHeader("authorization"),
       secretOrKey: JWT_SECRET
     },
     async (payload, done) => {
@@ -33,12 +33,12 @@ passport.use(
 passport.use(
   new LocalStartegy(
     {
-      usernameField: "name"
+      usernameField: "code"
     },
-    async (name, password, done) => {
+    async (code, password, done) => {
       try {
         //Find the user by email
-        const user = await User.findOne({ name });
+        const user = await User.findOne({ code });
         //If not handle it
         if (!user) {
           return done(null, false);

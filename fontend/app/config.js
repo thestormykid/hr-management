@@ -1,1 +1,1 @@
-var BACKEND = 'http://localhost:3000'
+var BACKEND = 'http://localhost:3000';

@@ -21,7 +21,7 @@ var routes = {
 
 // user components
 router.post('/signup', routes.views.user.signUp);
-router.post('/signin', passportSignIn, routes.views.user.signIn);
+// router.post('/signin', passportSignIn, routes.views.employee.signIn);
 router.get('/secret', passportJWT, routes.views.user.secret);
 
 // salary components
@@ -54,10 +54,12 @@ router.get('/getAllEmployee', routes.views.employee.getAllEmployee);
 router.post('/addEmployee', routes.views.employee.addEmployee);
 router.put('/updateEmployee', routes.views.employee.updateEmployee);
 router.delete('/removeEmployee/:id', routes.views.employee.removeEmployee);
+router.post('/signin', passportSignIn, routes.views.employee.signIn);
 
 // attendance
 router.post('/markAttendance', routes.views.attendance.markAttendance);
 router.get('/getSelectedEmployee', routes.views.attendance.getSelectedEmployee);
+router.get('/getUserAttendance', passportJWT, routes.views.attendance.getUserAttendance);
 // router.get('/checkAttendance', routes.views.attendance.checkAttendance);
 
 module.exports = router

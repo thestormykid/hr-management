@@ -30,25 +30,27 @@
         <div class="card employee-details">
             <table class="table table-borderless">
                 <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">E. Name</th>
-                    <th scope="col">E. Code</th>
-                    <th scope="col">Designation</th>
-                    <th scope="col">Shift</th>
-                    <th scope="col">Mark</th>
-                </tr>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">E. Name</th>
+                        <th scope="col">E. Code</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Enter</th>
+                        <th scope="col">Exit</th>
+                        <th scope="col">Fare</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="employee in allEmployees | filter: { name: nameFilter, code: codeFilter,
-                                deisngationName: designationFilter, shiftName: shiftFilter} : startsWith">
-                    <th class="table-item" scope="row">{{$index + 1}}</th>
-                    <td class="table-item">{{employee.name | uppercase }}</td>
-                    <td class="table-item">{{employee.code | uppercase}}</td>
-                    <td class="table-item">{{employee.designationId.name}}</td>
-                    <td class="table-item">{{employee.shiftId.shiftName}}</td>
-                    <td class="table-item"><i ng-click="open(employee)" class="fas fa-pencil-alt edit-icon"></i></td>
-                </tr>
+                    <tr ng-repeat="employee in allEmployees | filter: { name: nameFilter, code: codeFilter,
+                      deisngationName: designationFilter, shiftName: shiftFilter} : startsWith | orderBy: 'employee.name'">
+                        <th class="table-item" scope="row">{{$index + 1}}.</th>
+                        <td class="table-item">{{employee.employee.name | uppercase }}</td>
+                        <td class="table-item">{{employee.employee.code | uppercase}}</td>
+                        <td class="table-item">{{formatDate(employee.startingDate)}}</td>
+                        <td class="table-item" style="color:forestgreen">{{formatTime(employee.startingTime)}}</td>
+                        <td class="table-item" style="color:red">{{formatTime(employee.endingTime)}}</td>
+                        <td class="table-item">{{employee.amount}}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

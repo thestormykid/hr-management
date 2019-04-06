@@ -76,8 +76,30 @@ management.factory('employeeService', ['$q', '$http', function($q, $http) {
             })
 
             return promise.promise;
+        },
+
+        login: function(employee) {
+            var promise = $q.defer();
+
+            console.log(employee);
+
+            $http({
+                url: `${BACKEND}/signin`,
+                method: 'POST',
+                data: {
+                    code: employee.code,
+                    password: employee.password
+                }
+
+            }).then(function(success) {
+                promise.resolve(success.data);
+
+            }, function(failure) {
+                promise.reject(failure.data);
+
+            })
+
+            return promise.promise;
         }
-
     }
-
 }])

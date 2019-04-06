@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4">
+        <form name="myForm" class="form-group card component-form" novalidate>
+            <div class="row">
+                <div class="col-sm-12" class="form-header">
+                    <h5>Admin Registration</h5>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-sm-12">
+                    <label>Admin Name</label>
+                    <input name="name" required="" type="text" class="form-control" placeholder="Name"
+                           ng-model="user.name">
+                    <div ng-show="myForm.name.$dirty">
+                        <span ng-show="myForm.name.$error.required" style="color: red">Enter name</span>
+                    </div>
+                    <hr>
+                </div>
+                <div class="col-sm-12">
+                    <label>Admin Code</label>
+                    <input name="code" required="" type="text" class="form-control" placeholder="Code"
+                           ng-model="user.code">
+                    <div ng-show="myForm.code.$dirty">
+                        <span ng-show="myForm.code.$error.required" style="color: red">Enter code</span>
+                    </div>
+                    <hr>
+                </div>
+                <div class="col-sm-12">
+                    <label>Admin Password</label>
+                    <input name="password" required="" type="password" class="form-control" placeholder="Password"
+                           ng-model="user.password">
+                    <div ng-show="myForm.password.$dirty">
+                        <span ng-show="myForm.password.$error.required" style="color: red">Enter password</span>
+                    </div>
+                    <hr>
+                </div>
+                <div class="col-sm-12">
+                    <label>Address</label>
+                    <input name="address" required="" type="text" class="form-control" placeholder="Address"
+                           ng-model="user.address">
+                    <div ng-show="myForm.address.$dirty">
+                        <span ng-show="myForm.address.$error.required" style="color: red">Enter Address</span>
+                    </div>
+                    <hr>
+                </div>
+                <div class="col-sm-12">
+                    <button class="btn btn-primary" ng-click="addAdmin()"ng-disabled="myForm.$invalid">
+                        submit
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

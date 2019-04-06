@@ -1,4 +1,4 @@
-h5, label, th, td, input, option, select, button, li {
+h5, label, th, td, input, option, select, button, li, p, h6 {
     font-family: Roboto ;
 }
 
@@ -165,7 +165,7 @@ nav {
 }
 
 .employee-details {
-    margin-top: 2em;
+    padding: 1em;
 }
 
 .popover-content {
@@ -220,4 +220,13 @@ nav {
 
 .table-item {
     padding-top: 1.4em !important;
+}
+
+.modal-dialog {
+    max-width:25em;
+}
+
+.employee-info {
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
 }

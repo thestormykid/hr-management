@@ -44,7 +44,7 @@ module.exports = {
 	},
 
 	signIn: function(req, res) {
-		console.log("Request Body", req.user);
+
     	const token = signToken(req.user);
 
 	    res.json({ token });

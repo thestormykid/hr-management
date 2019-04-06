@@ -1,4 +1,5 @@
 var Attendance = require('../../model/attendance');
+var Employee = require('../../model/employee');
 var ObjectId = require('mongodb').ObjectID;
 
 
@@ -51,6 +52,9 @@ module.exports = {
 			},
 			{
 				$match: shiftObject
+			},
+			{
+				$sort: { startingDate: 1 }
 			}
 		], function(err, selectedEmployeesList) {
 			if (err) {
@@ -59,6 +63,30 @@ module.exports = {
 			}
 
 			res.json(selectedEmployeesList);
+		})
+	},
+
+	getUserAttendance: function(req, res) {
+		var user = req.user;
+
+		Attendance.aggregate([
+			{ $match: { employeeDetails: ObjectId(user._id) }},
+			// { $select: { amount: 0 } },
+			{ $sort: { startingDate: -1 } },
+		], function(err, attendanceList) {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+
+			Employee.findOne({_id: ObjectId(user._id)}).populate('designationId').populate('shiftId').exec(function(err, employee) {
+				if (err) {
+					console.log(err);
+					throw err;
+				}
+
+				return res.json({ 'attendanceList': attendanceList, 'user': employee});
+			})
 		})
 	}
 }

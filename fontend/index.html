@@ -16,13 +16,14 @@
 
         <!--controllers-->
         <script src="./app/controller/login.js"></script>
-        <script src="app/controller/attendance.js"></script>
+        <script src="./app/controller/attendance.js"></script>
         <script src="./app/controller/designations.js"></script>
         <script src="./app/controller/employeeRegistration.js"></script>
         <script src="./app/controller/reports.js"></script>
         <script src="./app/controller/salaryComponents.js"></script>
         <script src="./app/controller/workingShifts.js"></script>
-        <script src="app/controller/createShifts.js"></script>
+        <script src="./app/controller/createShifts.js"></script>
+        <script src="./app/controller/signup.js"></script>
 
 
         <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
@@ -38,41 +39,41 @@
 
         <!--<script src="../node_modules/angular/angular.js"></script>-->
         <link rel="stylesheet" href="app/stylesheet/main.css">
-
     </head>
 
-    <body ng-app="myApp">
+    <body ng-app="myApp" ng-controller="mainCtrl">
         <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
-            <a class="navbar-brand" href="#">Navbar</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
+                    <li ng-if="!containsUser" class="nav-item">
                         <a class="nav-link" ui-sref="index">Login</a>
                     </li>
-                    <li class="nav-item">
+                    <li ng-if="!containsUser" class="nav-item">
+                        <a class="nav-link" ui-sref="signup">Signup</a>
+                    </li>
+                    <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="salary-component">Salary Component</a>
                     </li>
-                    <li class="nav-item">
+                    <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="designation">Designation</a>
                     </li>
-                    <li class="nav-item">
+                    <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="create-shifts">Create shifts</a>
                     </li>
-                    <li class="nav-item">
+                    <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="working-shifts">Working Shifts</a>
                     </li>
-                    <li class="nav-item">
+                    <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="employee-registration">Employee Registration</a>
                     </li>
-                    <li class="nav-item">
+                    <li ng-if="containsUser&&!isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="attendance">Attendance</a>
                     </li>
-                    <li class="nav-item">
+                    <li ng-if="containsUser&&!isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="reports">Reports</a>
+                    </li>
+                    <li ng-if="containsUser" class="nav-item" style="cursor: pointer">
+                        <a class="nav-link" ng-click="logout()">logout</a>
                     </li>
                 </ul>
             </div>
