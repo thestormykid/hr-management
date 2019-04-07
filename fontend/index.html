@@ -24,6 +24,7 @@
         <script src="./app/controller/workingShifts.js"></script>
         <script src="./app/controller/createShifts.js"></script>
         <script src="./app/controller/signup.js"></script>
+        <!--<script src="./app/controlller/user-report.js"></script>-->
 
 
         <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
@@ -70,6 +71,9 @@
                         <a class="nav-link" ui-sref="attendance">Attendance</a>
                     </li>
                     <li ng-if="containsUser&&!isAdmin" class="nav-item">
+                        <a class="nav-link" ui-sref="user-reports">Reports</a>
+                    </li>
+                    <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="reports">Reports</a>
                     </li>
                     <li ng-if="containsUser" class="nav-item" style="cursor: pointer">

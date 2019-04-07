@@ -123,6 +123,9 @@ management.controller('ModalInstanceCtrl', function ($uibModalInstance, designat
         var _employee = {};
         Object.assign(_employee, $scope.employee);
 
+        _employee.isAdmin = false;
+        _employee.password = "12345"
+
         employeeService.addEmployee(_employee)
             .then(function(allEmployees) {
                 $uibModalInstance.close('add');

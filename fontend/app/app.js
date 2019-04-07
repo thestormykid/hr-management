@@ -56,9 +56,9 @@ management.config(['$stateProvider', function($stateProvider) {
             url: '/attendance',
             templateUrl: './app/templates/attendance.html',
             controller: 'attendanceCtrl',
-            resolve: {
-                redirectIfNotAuthenticated: _redirectIfNotAuthenticated
-            }
+            // resolve: {
+            //     redirectIfNotAuthenticated: _redirectIfNotAuthenticated
+            // }
         })
         .state('designation', {
             url: '/designation',
@@ -84,6 +84,14 @@ management.config(['$stateProvider', function($stateProvider) {
                 redirectIfNotAuthenticated: _redirectIfNotAuthenticated
             }
         })
+        // .state('user-report', {
+        //     url: 'reports/:id',
+        //     templateUrl: './app/templates/user-report.html',
+        //     controller: 'userReportCtrl',
+        //     resolve: {
+        //         redirectIfNotAuthenticated: _redirectIfNotAuthenticated
+        //     }
+        // })
         .state('salary-component', {
             url: '/salary-component',
             templateUrl: './app/templates/salaryComponents.html',

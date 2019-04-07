@@ -12,7 +12,7 @@ management.controller('loginCtrl',['$scope', '$rootScope', 'employeeService', '$
                 $rootScope.setEmployee(success);
 
             }, function(error) {
-                console.log(error);
+                hulla.send('Employee code or password is incorrect', 'info');
 
             })
     }

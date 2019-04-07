@@ -10,6 +10,7 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
             $http({
                 url: `${BACKEND}/markAttendance`,
                 method: 'POST',
+                headers: headers,
                 data: {
                     attendanceDetails: attendanceDetails
                 }
@@ -43,13 +44,32 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
             return promise.promise;
         },
 
-        getUserAttendance: function() {
+        getUserAttendance: function(userId) {
+            var promise = $q.defer();
+
+            // console.log(userId);
+            $http({
+                url: `${BACKEND}/getUserAttendance?uId=${userId}`,
+                method: 'GET',
+                headers: headers
+
+            }).then(function(success) {
+                promise.resolve(success.data);
+
+            }, function(error) {
+                promise.reject(error.data);
+
+            })
+
+            return promise.promise;
+        },
+
+        deleteAttendance: function(id) {
             var promise = $q.defer();
 
             $http({
-                url: `${BACKEND}/getUserAttendance`,
-                method: 'GET',
-                headers: headers
+                url:`${BACKEND}/deleteAttendance/${id}`,
+                method: 'DELETE',
 
             }).then(function(success) {
                 promise.resolve(success.data);

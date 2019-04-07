@@ -60,7 +60,7 @@ module.exports = {
 
 	getAllEmployee: function(req, res) {
 
-		Employee.find({}).populate('designationId').populate('shiftId').exec(function(err, allEmployee) {
+		Employee.find({isAdmin: false}).populate('designationId').populate('shiftId').exec(function(err, allEmployee) {
 			if (err) {
 				console.log(err);
 				throw err;

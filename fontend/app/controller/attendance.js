@@ -1,5 +1,5 @@
-management.controller('attendanceCtrl',['$scope', 'employeeService', 'designationService', 'createShiftService', '$uibModal', 'attendanceService', function($scope, employeeService,
-     designationService, createShiftService, $uibModal, attendanceService) {
+management.controller('attendanceCtrl',['$scope', 'employeeService', 'designationService', 'createShiftService', '$uibModal', 'attendanceService', '$location', '$rootScope', function($scope, employeeService,
+     designationService, createShiftService, $uibModal, attendanceService, $location, $rootScope) {
 
     $scope.userDetails;
     $scope.attendanceList;
@@ -9,10 +9,20 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
     $scope.filter = {};
     var hulla = new hullabaloo();
 
-    function getAttendance() {
-        attendanceService.getUserAttendance()
+    $scope.formatTime = function(time) {
+        return moment(time).format('HH:mm');
+
+    }
+
+    $scope.formatDate = function(date) {
+        return moment(date).format('DD/MM/YYYY');
+
+    }
+
+
+    function getAttendance(id) {
+        attendanceService.getUserAttendance(id)
             .then(function(userInfo) {
-                console.log(userInfo);
                 $scope.userDetails = userInfo.user;
                 $scope.attendanceList = userInfo.attendanceList;
 
@@ -21,7 +31,28 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
             })
     }
 
-    getAttendance();
+
+    $scope.deleteAttendance = function(attendanceId) {
+        attendanceService.deleteAttendance(attendanceId)
+            .then(function(message) {
+                hulla.send(message, 'success');
+                var user = $location.search();
+                getAttendance(user.userData);
+
+            }, function(error) {
+                console.log(error);
+
+            })
+    }
+
+    // when reports are watched by the admin
+    if ($rootScope.isAdmin) {
+        var user = $location.search();
+        getAttendance(user.userData);
+
+    } else {
+        getAttendance();
+    }
 
     $scope.open = function () {
 
@@ -43,6 +74,7 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
         modalInstance.result.then(function(status) {
             if (status == 'success') {
                 hulla.send('attendance marked', 'success');
+                getAttendance()
                 
             }
 
@@ -97,6 +129,7 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
     $scope.attendance = {};
     $scope.format = 'dd-MMMM-yyyy';
     $scope.factor = [];
+    var hulla = new hullabaloo();
 
     $scope.open1 = function() {
         $scope.popup1.opened = true;
@@ -113,8 +146,15 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
         $scope.attendance.amount = calculateSalary();
 
         attendanceService.markAttendance($scope.attendance)
-            .then(function(attendanceMarked) {
-                $uibModalInstance.close('success');
+            .then(function(attendanceStatus) {
+                console.log(attendanceStatus);
+                if (attendanceStatus == 'attendance present') {
+                    hulla.send('attendance already marked', 'info');
+
+                } else {
+                    $uibModalInstance.close('success');
+
+                }
 
             }, function(error) {
                 $uibModalInstance.close(error);
@@ -177,7 +217,6 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
         $uibModalInstance.dismiss('cancel');
 
     }
-
 
     function getSelectedFactors() {
         workingShiftService.getSelectedFactors($scope.employee.shiftId._id)

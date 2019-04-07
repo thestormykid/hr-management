@@ -7,14 +7,43 @@ module.exports = {
 
 	markAttendance: function(req, res) {
 		var markedAttendance = req.body.attendanceDetails;
+		var user = req.user;
 
-		Attendance.create(markedAttendance, function(err, attendanceMarked) {
+		Attendance.findOne({startingDate: markedAttendance.startingDate, employeeDetails: ObjectId(user._id)}, function(err, checkAttendance) {
 			if (err) {
 				console.log(err);
 				throw err;
 			}
 
-			res.json('attendance marked');
+			if (!checkAttendance) {
+
+				Attendance.create(markedAttendance, function(err, attendanceMarked) {
+					if (err) {
+						console.log(err);
+						throw err;
+					}
+
+					res.json('attendance marked');
+				})
+
+			} else {
+				res.json('attendance present');
+			}
+		})
+	},
+
+	deleteAttendance: function(req, res) {
+		var id = req.params.id;
+
+		Attendance.deleteOne({_id: id}, function(err, attendanceDeleted) {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+
+			console.log(attendanceDeleted)
+
+			res.json('successfully Deleted');
 		})
 	},
 
@@ -67,8 +96,28 @@ module.exports = {
 	},
 
 	getUserAttendance: function(req, res) {
-		var user = req.user;
+		var user = req.query.uId;
 
+		if(!user) {
+			user = req.user;
+			return getUserAttendanceHelper(user, req, res)
+
+		} else {
+			user = JSON.parse(user);
+
+			Employee.findOne({_id: user.employeeDetails}, function(err, user) {
+				if (err) {
+					console.log(err);
+					throw err;
+				}
+
+				return getUserAttendanceHelper(user, req, res);
+			})
+		}
+	}
+}
+
+function getUserAttendanceHelper(user, req, res) {
 		Attendance.aggregate([
 			{ $match: { employeeDetails: ObjectId(user._id) }},
 			// { $select: { amount: 0 } },
@@ -88,5 +137,4 @@ module.exports = {
 				return res.json({ 'attendanceList': attendanceList, 'user': employee});
 			})
 		})
-	}
 }

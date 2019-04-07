@@ -57,9 +57,10 @@ router.delete('/removeEmployee/:id', routes.views.employee.removeEmployee);
 router.post('/signin', passportSignIn, routes.views.employee.signIn);
 
 // attendance
-router.post('/markAttendance', routes.views.attendance.markAttendance);
+router.post('/markAttendance', passportJWT, routes.views.attendance.markAttendance);
 router.get('/getSelectedEmployee', routes.views.attendance.getSelectedEmployee);
 router.get('/getUserAttendance', passportJWT, routes.views.attendance.getUserAttendance);
+router.delete('/deleteAttendance/:id', routes.views.attendance.deleteAttendance);
 // router.get('/checkAttendance', routes.views.attendance.checkAttendance);
 
 module.exports = router

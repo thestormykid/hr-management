@@ -1,5 +1,5 @@
-management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationService', 'createShiftService', 'attendanceService',
-    function($scope, employeeService, designationService, createShiftService, attendanceService) {
+management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationService', 'createShiftService', 'attendanceService', '$location', '$state',
+    function($scope, employeeService, designationService, createShiftService, attendanceService, $location, $state) {
 
     $scope.allEmployees = [];
     $scope.allShifts = [];
@@ -10,17 +10,18 @@ management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationS
     $scope.findEmployees = function() {
         var filter = {};
 
-        if ($scope.filter.designation) {
+        if ($scope.filter&&$scope.filter.designation) {
             filter.designationId = JSON.parse($scope.filter.designation)._id;
+
         }
 
-        if ($scope.filter.shift) {
+        if ($scope.filter&&$scope.filter.shift) {
             filter.shiftId = JSON.parse($scope.filter.shift)._id;
+
         }
 
         attendanceService.getSelectedEmployees(filter)
             .then(function(allEmployees) {
-                hulla.send('employee fetched', 'info');
                 $scope.allEmployees = allEmployees;
                 console.log(allEmployees);
 
@@ -40,10 +41,28 @@ management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationS
 
     }
 
+    $scope.singleUserReport = function(employee) {
+        $location.path('/attendance').search({userData: JSON.stringify(employee)});
+
+    }
+
+    $scope.deleteAttendance = function(attendanceId) {
+        attendanceService.deleteAttendance(attendanceId)
+            .then(function(message) {
+                hulla.send(message, 'success');
+                $scope.findEmployees();
+
+            }, function(error) {
+                console.log(error);
+
+            })
+    }
+
     function getAllDesignations() {
         designationService.getAllDesignations()
             .then(function(allDesignations) {
                 $scope.allDesignations = allDesignations;
+                // console.log($scope.allDesignations);
 
             }, function(failure) {
                 console.log("can't fetch all designations");
@@ -55,6 +74,7 @@ management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationS
         createShiftService.getAllShifts()
             .then(function(allShifts) {
                 $scope.allShifts = allShifts;
+                // console.log($scope.allShifts);
 
             }, function(failure) {
                 console.log("can't fetch shift details");

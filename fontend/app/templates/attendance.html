@@ -12,10 +12,18 @@
                     <div class="col-sm-7">{{userDetails.code}}</div>
                 </div>
                 <div class="row employee-info">
+                    <div class="col-sm-5">Designation:</div>
+                    <div class="col-sm-7">{{userDetails.designationId.name}}</div>
+                </div>
+                <div class="row employee-info">
+                    <div class="col-sm-5">Shift:</div>
+                    <div class="col-sm-7">{{userDetails.shiftId.shiftName}}</div>
+                </div>
+                <div class="row employee-info">
                     <div class="col-sm-5">Address:</div>
                     <div class="col-sm-7">{{userDetails.address}}</div>
                 </div>
-                <div class="row employee-info" style="padding: 12px">
+                <div ng-if="!isAdmin" class="row employee-info" style="padding: 12px">
                     <button class="btn btn-primary" ng-click="open()">
                         Mark
                     </button>
@@ -31,53 +39,30 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Date</th>
-                            <th scope="col">Entering Time</th>
-                            <th scope="col">Exit Time</th>
+                            <th scope="col">Check in</th>
+                            <th scope="col">Check out</th>
+                            <th ng-if="isAdmin" scope="col">Amount</th>
+                            <th ng-if="isAdmin" scope="col">Delete</th>
                         </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="employee in allEmployees | filter: { name: nameFilter, code: codeFilter,
-                                deisngationName: designationFilter, shiftName: shiftFilter} : startsWith">
-                        <th class="table-item" scope="row">{{$index + 1}}</th>
-                        <td class="table-item">{{employee.name | uppercase }}</td>
-                        <td class="table-item">{{employee.code | uppercase}}</td>
-                        <td class="table-item">{{employee.designationId.name}}</td>
-                        <!--<td class="table-item">{{employee.shiftId.shiftName}}</td>-->
-                        <!--<td class="table-item"><i ng-click="open(employee)" class="fas fa-pencil-alt edit-icon"></i></td>-->
-                    </tr>
+                        <tr ng-repeat="attendance in attendanceList | filter: { name: nameFilter, code: codeFilter,
+                                    deisngationName: designationFilter, shiftName: shiftFilter} : startsWith">
+                            <th class="table-item" scope="row">{{$index + 1}}.</th>
+                            <td class="table-item">{{formatDate(attendance.startingDate)}}</td>
+                            <td class="table-item" style="color: forestgreen">{{formatTime(attendance.startingTime)}}</td>
+                            <td class="table-item" style="color: red">{{formatTime(attendance.endingTime)}}</td>
+                            <td class="table-item">{{attendance.amount}}</td>
+                            <td class="table-item"><i ng-click="deleteAttendance(attendance._id)" class="far fa-trash-alt delete-icon"></i></td>
+                            <!--<td class="table-item">{{employee.shiftId.shiftName}}</td>-->
+                            <!--<td class="table-item"><i ng-click="open(employee)" class="fas fa-pencil-alt edit-icon"></i></td>-->
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-
-
-        <!--<form novalidate name="myForm" class="form-group">-->
-            <!--<div class="row">-->
-                <!--<div class="col-sm-3 indexing">-->
-                    <!--<label>Select Designation</label>-->
-                    <!--<select class="form-control btn-default" ng-model="filter.designationName">-->
-                        <!--<option value="" selected ng-disabled="true">Select Designation</option>-->
-                        <!--<option ng-repeat="designation in allDesignations" value="{{designation.name}}">{{designation.name}}</option>-->
-                        <!--&lt;!&ndash;<option value="percentage">Percentage</option>&ndash;&gt;-->
-                    <!--</select>-->
-                <!--</div>-->
-                <!--<div class="col-sm-3 indexing">-->
-                    <!--<label>Select Shift Name</label>-->
-                    <!--<select class="form-control btn-default" ng-model="filter.shiftName">-->
-                        <!--<option value="" selected ng-disabled="true">Shift</option>-->
-                        <!--<option ng-repeat="shift in allShifts" value="{{shift.shiftName}}">{{shift.shiftName}}</option>-->
-                    <!--</select>-->
-                <!--</div>-->
-                <!--<div class="col-sm-2">-->
-                    <!--<label>&nbsp;</label>-->
-                    <!--<button class="btn btn-primary form-control" ng-click="findEmployees()">-->
-                        <!--SUBMIT-->
-                    <!--</button>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</form>-->
 <script type="text/ng-template" id="markAttendance.html">
     <div class="modal-body" id="modal-body">
         <form name="myForm" novalidate class="from-group component-form">

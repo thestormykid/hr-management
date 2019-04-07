@@ -166,6 +166,7 @@ nav {
 
 .employee-details {
     padding: 1em;
+    margin-top: 1em;
 }
 
 .popover-content {
@@ -229,4 +230,10 @@ nav {
 .employee-info {
     margin-bottom: 0.5em;
     margin-top: 0.5em;
+}
+
+.emp-name {
+    color: blue !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
 }
