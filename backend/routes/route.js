@@ -55,6 +55,11 @@ router.post('/addEmployee', routes.views.employee.addEmployee);
 router.put('/updateEmployee', routes.views.employee.updateEmployee);
 router.delete('/removeEmployee/:id', routes.views.employee.removeEmployee);
 router.post('/signin', passportSignIn, routes.views.employee.signIn);
+// router.post('/checkEmail', routes.views.employee.checkEmail);
+router.post('/sendEmail', routes.views.employee.sendEmail);
+router.post('/checkAdmin/:token', routes.views.employee.checkAdmin);
+router.post('/checkFirstTimeUser', passportJWT, routes.views.employee.checkFirstTimeUser);
+router.put('/update-password', passportJWT, routes.views.employee.updatePassword);
 
 // attendance
 router.post('/markAttendance', passportJWT, routes.views.attendance.markAttendance);

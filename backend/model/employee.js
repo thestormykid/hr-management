@@ -9,7 +9,9 @@ var schema = new mongoose.Schema({
 	address: {type: String, required: true},
 	password: {type: String, required: true},
 	isAdmin: {type: String, required: true},
-	uniqueToken: {type: String}
+	uniqueToken: {type: String},
+  email: {type: String, unique: true},
+  firstLogin: {type: Boolean, default: true}
 })
 
 schema.pre("save", async function(next) {

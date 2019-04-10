@@ -98,7 +98,7 @@ module.exports = {
 	getUserAttendance: function(req, res) {
 		var user = req.query.uId;
 
-		if(!user) {
+		if(user == "undefined") {
 			user = req.user;
 			return getUserAttendanceHelper(user, req, res)
 
