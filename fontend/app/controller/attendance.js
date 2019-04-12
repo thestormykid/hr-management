@@ -54,6 +54,27 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
         getAttendance();
     }
 
+
+    $scope.approveAttendance = function() {
+
+        var seggregatedIsApproved = _.groupBy($scope.attendanceList, 'isApproved');
+        var helperList = [];
+
+        _.forEach(seggregatedIsApproved.true, function(singleAttendance) {
+            helperList.push(singleAttendance._id);
+        })
+
+        attendanceService.approveAttendance(helperList)
+            .then(function(success) {
+                hulla.send(success.message, 'success');
+
+            }, function(failure) {
+                hulla.send(success.message, 'danger');
+
+            })
+
+    }
+
     $scope.open = function () {
 
         var modalInstance = $uibModal.open({

@@ -13,7 +13,8 @@ passport.use(
     },
     async (payload, done) => {
       try {
-        console.log("payload", payload);
+
+        console.log("payload 1st", payload);
         //find the user specied
         const user = await User.findById(payload.sub);
 
@@ -38,13 +39,17 @@ passport.use(
     async (code, password, done) => {
       try {
         //Find the user by email
+
         const user = await User.findOne({ code });
         //If not handle it
+
         if (!user) {
           return done(null, false);
         }
+
         //checking password is correct or not
         const isMatch = await user.isValidPassword(password);
+        console.log(isMatch);
 
         if (!isMatch) {
           return done(null, false);

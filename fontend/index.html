@@ -24,6 +24,10 @@
         <script src="./app/controller/workingShifts.js"></script>
         <script src="./app/controller/createShifts.js"></script>
         <script src="./app/controller/signup.js"></script>
+        <script src="./app/controller/employeeSetting.js"></script>
+        <script src="./app/controller/createAdmin.js"></script>
+        <script src="./app/controller/rootPage.js"></script>
+        <script src="./app/controller/updatePassword.js"></script>
         <!--<script src="./app/controlller/user-report.js"></script>-->
 
 
@@ -49,9 +53,9 @@
                     <li ng-if="!containsUser" class="nav-item">
                         <a class="nav-link" ui-sref="index">Login</a>
                     </li>
-                    <li ng-if="!containsUser" class="nav-item">
-                        <a class="nav-link" ui-sref="signup">Signup</a>
-                    </li>
+                    <!--<li ng-if="!containsUser" class="nav-item">-->
+                        <!--<a class="nav-link" ui-sref="signup">Signup</a>-->
+                    <!--</li>-->
                     <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="salary-component">Salary Component</a>
                     </li>
@@ -70,9 +74,9 @@
                     <li ng-if="containsUser&&!isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="attendance">Attendance</a>
                     </li>
-                    <li ng-if="containsUser&&!isAdmin" class="nav-item">
-                        <a class="nav-link" ui-sref="user-reports">Reports</a>
-                    </li>
+                    <!--<li ng-if="containsUser&&isAdmin" class="nav-item">-->
+                        <!--<a class="nav-link" ui-sref="user-reports">Reports</a>-->
+                    <!--</li>-->
                     <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="reports">Reports</a>
                     </li>

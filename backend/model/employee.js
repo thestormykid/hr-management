@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 
+// admin: 12345
+
 var schema = new mongoose.Schema({
 	name: {type: String, required: true},
 	designationId: {type: mongoose.Schema.Types.ObjectId, ref:'designation'},

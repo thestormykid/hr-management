@@ -1,5 +1,10 @@
 management.factory('salaryComponentService', ['$http','$q', function($http, $q) {
 
+    function setHeaders() {
+        var headers = { authorization: localStorage.getItem('token') }
+        return headers;
+    }
+
     return {
 
         addComponent: function(component) {
@@ -7,6 +12,7 @@ management.factory('salaryComponentService', ['$http','$q', function($http, $q) 
 
             $http({
                 method: 'POST',
+                headers: setHeaders(),
                 url: `${BACKEND}/addComponent`,
                 data: {
                     data: component
@@ -28,6 +34,7 @@ management.factory('salaryComponentService', ['$http','$q', function($http, $q) 
 
             $http({
                 url: `${BACKEND}/deleteComponent/${componentNeedToBeDeleted._id}`,
+                headers: setHeaders(),
                 method: 'DELETE'
 
             }).then(function(status) {
@@ -45,10 +52,9 @@ management.factory('salaryComponentService', ['$http','$q', function($http, $q) 
 
             var promise = $q.defer();
 
-            console.log(component);
-
             $http({
                 url: `${BACKEND}/updateComponent`,
+                headers: setHeaders(),
                 method: 'PUT',
                 data:  {component: JSON.stringify(component)}
             }).then(function(updatedComponent) {
@@ -92,6 +98,7 @@ management.factory('salaryComponentService', ['$http','$q', function($http, $q) 
 
             $http({
                 url:`${BACKEND}/getAllComponents`,
+                headers: setHeaders(),
                 method: 'GET'
             }).then(function(allComponents) {
                 promise.resolve(allComponents.data);

@@ -1,5 +1,10 @@
 management.factory('userService', ['$http', '$q', function($http, $q) {
 
+    function setHeaders() {
+        var headers = { authorization: localStorage.getItem('token') }
+        return headers;
+    }
+
     return {
 
         addUser: function(userDetails) {
@@ -8,6 +13,7 @@ management.factory('userService', ['$http', '$q', function($http, $q) {
             $http({
                 url: '/addUser',
                 method: 'POST',
+                headers: setHeaders(),
                 data: {
                     user: userDetails
                 }

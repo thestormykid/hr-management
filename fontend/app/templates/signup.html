@@ -10,9 +10,15 @@
             <br>
             <div class="row">
                 <div class="col-sm-12">
+                    <label>Admin Email</label>
+                    <input name="email" required="" type="email" class="form-control" placeholder="email" ng-disabled="true"
+                           ng-model="admin.email">
+                    <hr>
+                </div>
+                <div class="col-sm-12">
                     <label>Admin Name</label>
                     <input name="name" required="" type="text" class="form-control" placeholder="Name"
-                           ng-model="user.name">
+                           ng-model="admin.name">
                     <div ng-show="myForm.name.$dirty">
                         <span ng-show="myForm.name.$error.required" style="color: red">Enter name</span>
                     </div>
@@ -21,7 +27,7 @@
                 <div class="col-sm-12">
                     <label>Admin Code</label>
                     <input name="code" required="" type="text" class="form-control" placeholder="Code"
-                           ng-model="user.code">
+                           ng-model="admin.code">
                     <div ng-show="myForm.code.$dirty">
                         <span ng-show="myForm.code.$error.required" style="color: red">Enter code</span>
                     </div>
@@ -30,7 +36,7 @@
                 <div class="col-sm-12">
                     <label>Admin Password</label>
                     <input name="password" required="" type="password" class="form-control" placeholder="Password"
-                           ng-model="user.password">
+                           ng-model="admin.password">
                     <div ng-show="myForm.password.$dirty">
                         <span ng-show="myForm.password.$error.required" style="color: red">Enter password</span>
                     </div>
@@ -39,7 +45,7 @@
                 <div class="col-sm-12">
                     <label>Address</label>
                     <input name="address" required="" type="text" class="form-control" placeholder="Address"
-                           ng-model="user.address">
+                           ng-model="admin.address">
                     <div ng-show="myForm.address.$dirty">
                         <span ng-show="myForm.address.$error.required" style="color: red">Enter Address</span>
                     </div>

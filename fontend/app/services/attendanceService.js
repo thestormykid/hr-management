@@ -1,6 +1,9 @@
 management.factory('attendanceService', ['$http', '$q', function($http, $q) {
 
-    var headers = { authorization: localStorage.getItem('token') }
+    function setHeaders() {
+        var headers = { authorization: localStorage.getItem('token') }
+        return headers;
+    }
 
     return {
 
@@ -10,7 +13,7 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
             $http({
                 url: `${BACKEND}/markAttendance`,
                 method: 'POST',
-                headers: headers,
+                headers: setHeaders(),
                 data: {
                     attendanceDetails: attendanceDetails
                 }
@@ -31,7 +34,8 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
 
             $http({
                 url:`${BACKEND}/getSelectedEmployee?filter=${JSON.stringify(filter)}`,
-                method:'GET'
+                headers: setHeaders(),
+                method:'GET',
 
             }).then(function(success) {
                 promise.resolve(success.data);
@@ -47,11 +51,10 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
         getUserAttendance: function(userId) {
             var promise = $q.defer();
 
-            // console.log(userId);
             $http({
                 url: `${BACKEND}/getUserAttendance?uId=${userId}`,
                 method: 'GET',
-                headers: headers
+                headers: setHeaders()
 
             }).then(function(success) {
                 promise.resolve(success.data);
@@ -69,6 +72,7 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
 
             $http({
                 url:`${BACKEND}/deleteAttendance/${id}`,
+                headers: setHeaders(),
                 method: 'DELETE',
 
             }).then(function(success) {
@@ -78,6 +82,28 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
                 promise.reject(error.data);
 
             })
+
+            return promise.promise;
+        },
+
+        approveAttendance: function(attendanceList) {
+            var promise = $q.defer();
+
+            $http({
+                url: `${BACKEND}/approveAttendance`,
+                method: 'PUT',
+                data: {
+                    approvedAttendanceList: attendanceList
+                }
+
+            }).then(function(success) {
+                promise.resolve(success.data);
+
+            }, function(failure) {
+                promise.reject(failure.data);
+
+            })
+
 
             return promise.promise;
         }

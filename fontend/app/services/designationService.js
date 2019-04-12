@@ -1,16 +1,8 @@
 management.factory('designationService', ['$http','$q', function($http, $q) {
 
-    function getSalaryComponentData() {
-        return JSON.parse(localStorage.getItem('salaryComponent'));
-
-    }
-
-    function getAllDesignationData() {
-        return JSON.parse(localStorage.getItem('designation'));
-    }
-
-    function setAllDesignationData(allDesignations) {
-        localStorage.setItem('designation', JSON.stringify(allDesignations));
+    function setHeaders() {
+        var headers = { authorization: localStorage.getItem('token') }
+        return headers;
     }
 
     return {
@@ -20,6 +12,7 @@ management.factory('designationService', ['$http','$q', function($http, $q) {
 
             $http({
                 url: `${BACKEND}/getAllDesignation`,
+                headers: setHeaders(),
                 method: 'GET'
             }).then(function(allDesignation) {
                 promise.resolve(allDesignation.data);
@@ -37,6 +30,7 @@ management.factory('designationService', ['$http','$q', function($http, $q) {
 
             $http({
                 url: `${BACKEND}/addDesignation`,
+                headers: setHeaders(),
                 method: 'POST',
                 data: {
                     designation: designation
@@ -56,11 +50,10 @@ management.factory('designationService', ['$http','$q', function($http, $q) {
         updateDesignation: function(designation) {
             var promise = $q.defer();
 
-            console.log(designation);
-
             $http({
                 url: `${BACKEND}/updateDesignation`,
                 method: 'PUT',
+                headers: setHeaders(),
                 data: {
                     designation: designation
                 }
@@ -80,6 +73,7 @@ management.factory('designationService', ['$http','$q', function($http, $q) {
 
             $http({
                 method: 'DELETE',
+                headers: setHeaders(),
                 url:`${BACKEND}/deleteDesignation/${designation_id}`
             }).then(function(status) {
                 promise.resolve(status.data);

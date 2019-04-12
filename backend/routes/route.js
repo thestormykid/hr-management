@@ -66,6 +66,7 @@ router.post('/markAttendance', passportJWT, routes.views.attendance.markAttendan
 router.get('/getSelectedEmployee', routes.views.attendance.getSelectedEmployee);
 router.get('/getUserAttendance', passportJWT, routes.views.attendance.getUserAttendance);
 router.delete('/deleteAttendance/:id', routes.views.attendance.deleteAttendance);
+router.put('/approveAttendance', routes.views.attendance.approveAttendance);
 // router.get('/checkAttendance', routes.views.attendance.checkAttendance);
 
 module.exports = router

@@ -200,12 +200,14 @@ module.exports = {
 	updatePassword: async function(req, res) {
 		var updatedData = {};
 		var password = req.body.password;
+		console.log(password);
 		const salt = await bcrypt.genSalt(10);
 		var hashPassword = await bcrypt.hash(password, salt);
 		updatedData.password = hashPassword;
 		updatedData.firstLogin = false;
 
 		var id = req.user._id;
+		console.log(req.user);
 
 		Employee.findByIdAndUpdate(id, updatedData, function(err, passwordUpdated) {
 			if (err) {

@@ -26,7 +26,12 @@ management.controller('mainCtrl', ['$scope', '$rootScope', '$location', function
         $rootScope.containsUser = true;
         localStorage.setItem('token', token);
         localStorage.setItem('isAdmin', $rootScope.isAdmin);
-        $location.path('/reports');
+        if ($rootScope.isAdmin) {
+            $location.path('/reports');
+
+        } else {
+            $location.path('/attendance');
+        }
     }
 
 }])
@@ -37,7 +42,8 @@ management.config(['$stateProvider', function($stateProvider) {
         .state('index', {
             url: '/',
             templateUrl:'./app/templates/login.html',
-            controller: 'loginCtrl'
+            controller: 'loginCtrl',
+
         })
         .state('signup', {
             url: '/signup',
@@ -52,13 +58,32 @@ management.config(['$stateProvider', function($stateProvider) {
                 redirectIfNotAuthenticated: _redirectIfNotAuthenticated
             }
         })
+        .state('user-setting', {
+            url:'/user-setting',
+            templateUrl: './app/templates/userSetting.html',
+            controller: 'employeeSettingCtrl',
+            resolve: {
+                redirectIfNotAuthenticated: _redirectIfNotAuthenticated
+            }
+        })
+        .state('root-page', {
+            url: '/root-page',
+            templateUrl: './app/templates/rootPage.html',
+            controller: 'rootPageCtrl'
+        })
+        .state('updatePassword',  {
+            url: '/update-password',
+            templateUrl: './app/templates/updatePassword.html',
+            controller: 'updatePasswordCtrl'
+        })
         .state('attendance', {
             url: '/attendance',
             templateUrl: './app/templates/attendance.html',
             controller: 'attendanceCtrl',
-            // resolve: {
-            //     redirectIfNotAuthenticated: _redirectIfNotAuthenticated
-            // }
+            resolve: {
+                // redirectIfNotAuthenticated: _redirectIfNotAuthenticated,
+                employee: checkForPassword
+            }
         })
         .state('designation', {
             url: '/designation',
@@ -84,14 +109,14 @@ management.config(['$stateProvider', function($stateProvider) {
                 redirectIfNotAuthenticated: _redirectIfNotAuthenticated
             }
         })
-        // .state('user-report', {
-        //     url: 'reports/:id',
-        //     templateUrl: './app/templates/user-report.html',
-        //     controller: 'userReportCtrl',
-        //     resolve: {
-        //         redirectIfNotAuthenticated: _redirectIfNotAuthenticated
-        //     }
-        // })
+        .state('create-admin', {
+            url: '/create-admin/:id',
+            templateUrl: './app/templates/signup.html',
+            controller: 'createAdminCtrl',
+            resolve: {
+                email: getTokenFromUrl
+            }
+        })
         .state('salary-component', {
             url: '/salary-component',
             templateUrl: './app/templates/salaryComponents.html',
@@ -116,16 +141,19 @@ management.config(['$stateProvider', function($stateProvider) {
                 redirectIfNotAuthenticated: _redirectIfNotAuthenticated
             }
         })
-        // .state('/')
+        .state('success', {
+            url: '/success',
+            templateUrl: './app/templates/success.html'
+        })
+
+    // .state('/')
 
 }]).run(function($rootScope, $location, $state) {
-    // console.log(error);
         $state.defaultErrorHandler(function(error) {
             // This is a naive example of how to silence the default error handler.
             console.log(error);
         });
     })
-
 
 function _redirectIfNotAuthenticated($q, $state, $timeout) {
     var defer = $q.defer();
@@ -142,6 +170,69 @@ function _redirectIfNotAuthenticated($q, $state, $timeout) {
 
         defer.reject();
     }
+
+    return defer.promise;
+}
+
+function getTokenFromUrl($q,$stateParams, $http, $timeout) {
+    var defer = $q.defer();
+    var id = $stateParams.id;
+    var hulla = new hullabaloo();
+
+    $http({
+        url: `${BACKEND}/checkAdmin/${id}`,
+        method: 'POST'
+
+    }).then(function(success) {
+        if (success.data.status) {
+            defer.resolve(success.data.mail);
+
+        } else {
+            hulla.send('admin with the email already exists', 'danger');
+            defer.reject();
+
+        }
+
+    }, function(failure) {
+        defer.reject()
+        hulla.send('someting went wrong', 'danger');
+
+    })
+
+    return defer.promise;
+}
+
+function checkForPassword($q, $http, $state, $timeout) {
+    var defer = $q.defer();
+
+    var headers = { authorization: localStorage.getItem('token') };
+    var hulla = new hullabaloo();
+
+    $http({
+        url: `${BACKEND}/checkFirstTimeUser`,
+        method: 'POST',
+        headers: headers
+
+    }).then(function(success) {
+        // 1st time user
+        if (success.data.status) {
+            hulla.send(success.data.info, 'info');
+            $timeout(function() {
+                $state.go('updatePassword');
+            });
+
+            defer.resolve(success.data.user);
+
+        } else {
+            defer.resolve();
+
+        }
+
+    }, function(failure) {
+        defer.reject();
+        hulla.send('something went wrong', 'danger');
+
+    })
 
     return defer.promise;
 }

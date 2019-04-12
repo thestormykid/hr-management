@@ -2,6 +2,7 @@ management.controller('loginCtrl',['$scope', '$rootScope', 'employeeService', '$
                                                                                                     employeeService, $location) {
 
     $scope.user = {};
+
     var hulla = new hullabaloo();
 
     $scope.login = function() {

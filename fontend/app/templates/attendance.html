@@ -1,64 +1,88 @@
-<div class="container row">
-    <div class="col-sm-4">
-        <div class="employee-filters">
-            <div class="card container employee-details">
-                <h4>Employee Details</h4>
-                <div class="row employee-info">
-                    <div class="col-sm-5">Name:</div>
-                    <div class="col-sm-7">{{userDetails.name}}</div>
-                </div>
-                <div class="row employee-info">
-                    <div class="col-sm-5">Code:</div>
-                    <div class="col-sm-7">{{userDetails.code}}</div>
-                </div>
-                <div class="row employee-info">
-                    <div class="col-sm-5">Designation:</div>
-                    <div class="col-sm-7">{{userDetails.designationId.name}}</div>
-                </div>
-                <div class="row employee-info">
-                    <div class="col-sm-5">Shift:</div>
-                    <div class="col-sm-7">{{userDetails.shiftId.shiftName}}</div>
-                </div>
-                <div class="row employee-info">
-                    <div class="col-sm-5">Address:</div>
-                    <div class="col-sm-7">{{userDetails.address}}</div>
-                </div>
-                <div ng-if="!isAdmin" class="row employee-info" style="padding: 12px">
-                    <button class="btn btn-primary" ng-click="open()">
-                        Mark
-                    </button>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <p>FILTER</p>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <input type="text" >
+            </div>
+            
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="employee-filters">
+                <div class="card container employee-details">
+                    <h4>Employee Details</h4>
+                    <div class="row employee-info">
+                        <div class="col-sm-5">Name:</div>
+                        <div class="col-sm-7">{{userDetails.name}}</div>
+                    </div>
+                    <div class="row employee-info">
+                        <div class="col-sm-5">Code:</div>
+                        <div class="col-sm-7">{{userDetails.code}}</div>
+                    </div>
+                    <div class="row employee-info">
+                        <div class="col-sm-5">Designation:</div>
+                        <div class="col-sm-7">{{userDetails.designationId.name}}</div>
+                    </div>
+                    <div class="row employee-info">
+                        <div class="col-sm-5">Shift:</div>
+                        <div class="col-sm-7">{{userDetails.shiftId.shiftName}}</div>
+                    </div>
+                    <div class="row employee-info">
+                        <div class="col-sm-5">Address:</div>
+                        <div class="col-sm-7">{{userDetails.address}}</div>
+                    </div>
+                    <div ng-if="!isAdmin" class="row employee-info" style="padding: 12px">
+                        <button class="btn btn-primary" ng-click="open()">
+                            Mark
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-8">
-        <div class="employee-list">
-            <div class="card employee-details">
-                <table class="table table-borderless">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Check in</th>
-                            <th scope="col">Check out</th>
-                            <th ng-if="isAdmin" scope="col">Amount</th>
-                            <th ng-if="isAdmin" scope="col">Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="attendance in attendanceList | filter: { name: nameFilter, code: codeFilter,
-                                    deisngationName: designationFilter, shiftName: shiftFilter} : startsWith">
-                            <th class="table-item" scope="row">{{$index + 1}}.</th>
-                            <td class="table-item">{{formatDate(attendance.startingDate)}}</td>
-                            <td class="table-item" style="color: forestgreen">{{formatTime(attendance.startingTime)}}</td>
-                            <td class="table-item" style="color: red">{{formatTime(attendance.endingTime)}}</td>
-                            <td class="table-item">{{attendance.amount}}</td>
-                            <td class="table-item"><i ng-click="deleteAttendance(attendance._id)" class="far fa-trash-alt delete-icon"></i></td>
-                            <!--<td class="table-item">{{employee.shiftId.shiftName}}</td>-->
-                            <!--<td class="table-item"><i ng-click="open(employee)" class="fas fa-pencil-alt edit-icon"></i></td>-->
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="col-sm-8">
+            <div class="employee-list">
+                <div class="card employee-details">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Check in</th>
+                                <th scope="col">Check out</th>
+                                <th ng-if="isAdmin" scope="col">Amount</th>
+                                <th ng-if="isAdmin" scope="col">Approved</th>
+                                <th ng-if="isAdmin" scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="attendance in attendanceList | filter: { name: nameFilter, code: codeFilter,
+                                        deisngationName: designationFilter, shiftName: shiftFilter} : startsWith">
+                                <th class="table-item" scope="row">{{$index + 1}}.</th>
+                                <td class="table-item">{{formatDate(attendance.startingDate)}}</td>
+                                <td class="table-item" style="color: forestgreen">{{formatTime(attendance.startingTime)}}</td>
+                                <td class="table-item" style="color: red">{{formatTime(attendance.endingTime)}}</td>
+                                <td ng-if="isAdmin" class="table-item">{{attendance.amount}}</td>
+                                <td ng-if="isAdmin" class="table-item" style="text-align: center">
+                                    <input type="checkbox" ng-model="attendance.isApproved">
+                                </td>
+                                <!--<td ng-if="isAdmin&&!attendance.isApproved" class="table-item"></td>-->
+                                <td ng-if="isAdmin" class="table-item" style="text-align: center"><i ng-click="deleteAttendance(attendance._id)" class="far fa-trash-alt delete-icon"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div ng-if="isAdmin">
+                    <br>
+                    <button class="btn btn-primary float-right" ng-click="approveAttendance()">
+                        Approve
+                    </button>
+                </div>
             </div>
         </div>
     </div>

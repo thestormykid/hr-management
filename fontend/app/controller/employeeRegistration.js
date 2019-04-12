@@ -67,6 +67,7 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
                 $scope.allEmployees = allEmployees;
                 console.log($scope.allEmployees);
 
+
             }, function(error) {
                 console.log('not able to fetch employee');
 

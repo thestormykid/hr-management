@@ -1,5 +1,10 @@
 management.factory('workingShiftService', ['$http', '$q',  function($http, $q) {
 
+    function setHeaders() {
+        var headers = { authorization: localStorage.getItem('token') }
+        return headers;
+    }
+
     return {
 
         createShiftFactor: function(singleFactor) {
@@ -8,6 +13,7 @@ management.factory('workingShiftService', ['$http', '$q',  function($http, $q) {
                 $http({
                     url: `${BACKEND}/addFactor`,
                     method: 'POST',
+                    headers: setHeaders(),
                     data: {
                         factor: singleFactor
                     }
@@ -28,6 +34,7 @@ management.factory('workingShiftService', ['$http', '$q',  function($http, $q) {
 
             $http({
                 url: `${BACKEND}/removeFactor/${factorNeedToBeDeleted._id}`,
+                headers: setHeaders(),
                 method:'DELETE'
 
             }).then(function(success) {
@@ -46,6 +53,7 @@ management.factory('workingShiftService', ['$http', '$q',  function($http, $q) {
 
             $http({
                 url:`${BACKEND}/updateFactor`,
+                headers: setHeaders(),
                 method:'PUT',
                 data: {
                     factor: factor
@@ -67,6 +75,7 @@ management.factory('workingShiftService', ['$http', '$q',  function($http, $q) {
 
             $http({
                 url: `${BACKEND}/getAllFactor`,
+                headers: setHeaders(),
                 method: 'GET'
             }).then(function(success) {
                 promise.resolve(success.data);
@@ -85,6 +94,7 @@ management.factory('workingShiftService', ['$http', '$q',  function($http, $q) {
 
             $http({
                 url: `${BACKEND}/getSelectedFactors?id=${shiftId}`,
+                headers: setHeaders(),
                 method: 'GET'
 
             }).then(function(success) {

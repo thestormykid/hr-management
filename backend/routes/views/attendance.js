@@ -1,6 +1,7 @@
 var Attendance = require('../../model/attendance');
 var Employee = require('../../model/employee');
 var ObjectId = require('mongodb').ObjectID;
+var async  = require('async');
 
 
 module.exports = {
@@ -98,10 +99,30 @@ module.exports = {
 	getUserAttendance: function(req, res) {
 		var user = req.query.uId;
 
+		var query = []
+
+		// for employee
 		if(user == "undefined") {
 			user = req.user;
-			return getUserAttendanceHelper(user, req, res)
+			var cond1 = {
+				$match: {employeeDetails: ObjectId(user._id)}
+			}
 
+			var cond2 = {
+				$sort: {startingDate: -1}
+			}
+
+			var cond3 = {
+				$match: {isApproved: true}
+			}
+
+			query.push(cond1);
+			query.push(cond2);
+			query.push(cond3);
+
+			return getUserAttendanceHelper(req, res, user, query)
+
+		// for admin
 		} else {
 			user = JSON.parse(user);
 
@@ -111,18 +132,55 @@ module.exports = {
 					throw err;
 				}
 
-				return getUserAttendanceHelper(user, req, res);
+				var cond1 = {
+					$match: {employeeDetails: ObjectId(user._id)}
+				}
+
+				var cond2 = {
+					$sort: {startingDate: -1}
+				}
+
+				query.push(cond1);
+				query.push(cond2);
+
+				return getUserAttendanceHelper(req, res, user, query);
 			})
 		}
+	},
+
+	approveAttendance: function(req, res) {
+		var approveAttendanceList = req.body.approvedAttendanceList;
+		var queryList = [];
+
+		approveAttendanceList.forEach(function(singleAttendance) {
+			queryList.push(function(cb) {
+				Attendance.findByIdAndUpdate(singleAttendance, {isApproved: true}, function(err, updated) {
+					if(err) {
+						console.log(err);
+						cb(err);
+					}
+
+					cb(null, updated);
+				})
+			})
+		})
+
+		async.parallel(queryList, function(err, allUpdatedAttendance) {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+
+			console.log(allUpdatedAttendance)
+
+			res.json({message: 'approved successfully'});
+		})
 	}
 }
 
-function getUserAttendanceHelper(user, req, res) {
-		Attendance.aggregate([
-			{ $match: { employeeDetails: ObjectId(user._id) }},
-			// { $select: { amount: 0 } },
-			{ $sort: { startingDate: -1 } },
-		], function(err, attendanceList) {
+function getUserAttendanceHelper(req, res, user, query) {
+
+		Attendance.aggregate(query, function(err, attendanceList) {
 			if (err) {
 				console.log(err);
 				throw err;
@@ -137,4 +195,25 @@ function getUserAttendanceHelper(user, req, res) {
 				return res.json({ 'attendanceList': attendanceList, 'user': employee});
 			})
 		})
+
+		// Attendance.aggregate([
+		// 	{ $match: { employeeDetails: ObjectId(user._id) }},
+		// 	// { $select: { amount: 0 } },
+		// 	{ $sort: { startingDate: -1 } },
+
+		// ], function(err, attendanceList) {
+		// 	if (err) {
+		// 		console.log(err);
+		// 		throw err;
+		// 	}
+
+		// 	Employee.findOne({_id: ObjectId(user._id)}).populate('designationId').populate('shiftId').exec(function(err, employee) {
+		// 		if (err) {
+		// 			console.log(err);
+		// 			throw err;
+		// 		}
+
+		// 		return res.json({ 'attendanceList': attendanceList, 'user': employee});
+		// 	})
+		// })
 }

@@ -1,13 +1,8 @@
 management.factory('createShiftService', ['$q', '$http', function($q, $http) {
 
-    function addAllShifts(allShifts) {
-        localStorage.setItem('workingShifts', JSON.stringify(allShifts));
-
-    }
-
-    function getAllShifts() {
-        return JSON.parse(localStorage.getItem('workingShifts'));
-
+    function setHeaders() {
+        var headers = { authorization: localStorage.getItem('token') }
+        return headers;
     }
 
     return {
@@ -19,6 +14,7 @@ management.factory('createShiftService', ['$q', '$http', function($q, $http) {
             $http({
                 url: `${BACKEND}/addShift`,
                 method: 'POST',
+                headers: setHeaders(),
                 data :{
                     shift: singleShift
                 }
@@ -39,6 +35,7 @@ management.factory('createShiftService', ['$q', '$http', function($q, $http) {
 
             $http({
                 url: `${BACKEND}/getAllShifts`,
+                headers: setHeaders(),
                 method: 'GET'
 
             }).then(function(allShifts) {
@@ -57,6 +54,7 @@ management.factory('createShiftService', ['$q', '$http', function($q, $http) {
 
             $http({
                 url: `${BACKEND}/removeShift/${shiftNeedToBeRemoved._id}`,
+                headers: setHeaders(),
                 method: 'DELETE',
             }).then(function(success) {
                 promise.resolve(success.data);
@@ -74,6 +72,7 @@ management.factory('createShiftService', ['$q', '$http', function($q, $http) {
 
             $http({
                 url:`${BACKEND}/updateShift`,
+                headers: setHeaders(),
                 method: 'PUT',
                 data: {
                     shift: JSON.stringify(shift)
