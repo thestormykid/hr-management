@@ -3,12 +3,22 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
 
     var hulla = new hullabaloo();
     $scope.allEmployees = [];
+    $scope.pagination = {};
+    $scope.pagination.itemsPerPage = 10;
+    $scope.pagination.totalItems = 64;
+    $scope.pagination.currentPage = 1;
+
+    $scope.pageChanged = function() {
+        getData();
+        console.log($scope.pagination.currentPage);
+    }
 
     $scope.deleteEmployee = function(employee) {
 
         employeeService.removeEmployee(employee)
             .then(function(allEmployees) {
                 $scope.allEmployees = getData();
+                getEmployeeCount();
                 hulla.send('employee successfully deleted', 'success');
 
             }, function(error) {
@@ -50,6 +60,7 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
 
             } else {
                 hulla.send('employees added successfully', 'success');
+                getEmployeeCount();
 
             }
 
@@ -62,7 +73,7 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
 
     function getData() {
 
-        employeeService.getAllEmployee()
+        employeeService.getAllEmployee($scope.pagination.currentPage, $scope.pagination.itemsPerPage)
             .then(function(allEmployees) {
                 $scope.allEmployees = allEmployees;
                 console.log($scope.allEmployees);
@@ -75,6 +86,19 @@ management.controller('employeeRegistrationCtrl',['$scope', 'designationService'
 
     }
 
+    function getEmployeeCount() {
+        employeeService.getEmployeeCount()
+            .then(function(success) {
+                console.log(success.totalItems);
+                $scope.pagination.totalItems = success.totalItems;
+
+            }, function(failure) {
+                console.log(failure);
+
+            })
+    }
+
+    getEmployeeCount();
     getData();
 
 }])

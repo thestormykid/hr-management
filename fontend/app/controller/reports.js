@@ -5,6 +5,40 @@ management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationS
     $scope.allShifts = [];
     $scope.allDesignations = [];
     var hulla = new hullabaloo();
+    $scope.pagination = {};
+    $scope.pagination.itemsPerPage = 10;
+    $scope.pagination.totalItems = 64;
+    $scope.pagination.currentPage = 1;
+
+    // $scope.setPage = function (pageNo) {
+    //     $scope.currentPage = pageNo;
+    // };
+
+    $scope.pageChanged = function() {
+        $scope.findEmployees();
+        console.log($scope.pagination.currentPage);
+        // $log.log('Page changed to: ' + $scope.currentPage);
+    };
+
+    // $scope.maxSize = 5;
+    // $scope.bigTotalItems = 100;
+    // $scope.bigCurrentPage = 1;
+
+    // $scope.setPage = function (pageNo) {
+    //     $scope.currentPage = pageNo;
+    // }
+    //
+    // $scope.pageChanged = function(dasdasd) {
+    //     console.log(dasdasd);
+    //     console.log('Page changed to: ' + $scope.currentPage);
+    // };
+    //
+    // $scope.pageChange = function() {
+    //     console.log($scope.bigCurrentPage);
+    // }
+    // $scope.totalItems =100;
+    // $scope.currentPage = 4;
+    //
 
 
     $scope.findEmployees = function() {
@@ -20,7 +54,7 @@ management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationS
 
         }
 
-        attendanceService.getSelectedEmployees(filter)
+        attendanceService.getSelectedEmployees(filter, $scope.pagination.currentPage, $scope.pagination.itemsPerPage)
             .then(function(allEmployees) {
                 $scope.allEmployees = allEmployees;
                 console.log(allEmployees);
@@ -62,7 +96,6 @@ management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationS
         designationService.getAllDesignations()
             .then(function(allDesignations) {
                 $scope.allDesignations = allDesignations;
-                // console.log($scope.allDesignations);
 
             }, function(failure) {
                 console.log("can't fetch all designations");
@@ -82,6 +115,17 @@ management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationS
             })
     }
 
+    function getAttendanceCount() {
+        attendanceService.getAttendanceCount()
+            .then(function(success) {
+                $scope.pagination.totalItems = success.totalItems;
+
+            }, function(failure) {
+                console.log(failure);
+            })
+    }
+
+    getAttendanceCount();
     getAllDesignations();
     getAllShifts();
 

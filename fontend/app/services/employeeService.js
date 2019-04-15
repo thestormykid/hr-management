@@ -52,11 +52,11 @@ management.factory('employeeService', ['$q', '$http', function($q, $http) {
             return promise.promise;
         },
 
-        getAllEmployee: function() {
+        getAllEmployee: function(pno, itemsPerPage) {
             var promise = $q.defer();
 
             $http({
-                url:`${BACKEND}/getAllEmployee`,
+                url:`${BACKEND}/getAllEmployee?pno=${pno}&itemsPerPage=${itemsPerPage}`,
                 method: 'GET',
                 headers: setHeaders(),
 
@@ -65,6 +65,25 @@ management.factory('employeeService', ['$q', '$http', function($q, $http) {
 
             }, function(error) {
                 promise.reject(error.data);
+
+            })
+
+            return promise.promise;
+        },
+
+        getEmployeeCount: function() {
+            var promise = $q.defer();
+
+            $http({
+                url: `${BACKEND}/getEmployeeCount`,
+                method: 'GET',
+                headers: setHeaders()
+
+            }).then(function(success) {
+                promise.resolve(success.data);
+
+            }, function(failure) {
+                promise.reject(failure.data);
 
             })
 

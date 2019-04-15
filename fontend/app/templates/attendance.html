@@ -1,15 +1,39 @@
 <div class="container">
-    <div class="row">
-        <div class="col-sm-12">
-            <p>FILTER</p>
+    <form class="form-group" novalidate >
+        <div class="row">
+            <div class="col-sm-12" style="text-align: center">
+                <p>FILTER</p>
+            </div>
         </div>
         <div class="row">
-            <div class="col-sm-3">
-                <input type="text" >
+            <div class="col-sm-2">
+                <label>Name</label>
+                <input type="text" class="form-control" placeholder="Search Name">
             </div>
-            
+            <div class="col-sm-2">
+                <label>Start Date</label>
+                <p class="input-group">
+                    <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="filter.startingDate"
+                           is-open="popup2.opened" ng-required="true" close-text="Close" datepicker-options="options2"
+                           ng-change="updateDatePicker3()" />
+                    <span class="input-group-btn">
+                        <i class="fas fa-calendar-alt input-group-text" ng-click="open2()"></i>
+                    </span>
+                </p>
+            </div>
+            <div class="col-sm-2">
+                <label>End Date</label>
+                <p class="input-group">
+                    <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="filter.endingDate"
+                           is-open="popup3.opened" ng-required="true" close-text="Close" datepicker-options="options3"
+                           ng-change="updateDatePicker2()" />
+                    <span class="input-group-btn">
+                        <i class="fas fa-calendar-alt input-group-text" ng-click="open3()"></i>
+                    </span>
+                </p>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 <div class="container">
     <div class="row">
@@ -50,26 +74,32 @@
                 <div class="card employee-details">
                     <table class="table table-borderless">
                         <thead>
-                            <tr>
+                            <tr style="text-align: center">
                                 <th scope="col">#</th>
                                 <th scope="col">Date</th>
                                 <th scope="col">Check in</th>
                                 <th scope="col">Check out</th>
                                 <th ng-if="isAdmin" scope="col">Amount</th>
-                                <th ng-if="isAdmin" scope="col">Approved</th>
+                                <th scope="col">Approved</th>
                                 <th ng-if="isAdmin" scope="col">Delete</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="attendance in attendanceList | filter: { name: nameFilter, code: codeFilter,
-                                        deisngationName: designationFilter, shiftName: shiftFilter} : startsWith">
+                                        deisngationName: designationFilter, shiftName: shiftFilter} : startsWith" style="text-align: center">
                                 <th class="table-item" scope="row">{{$index + 1}}.</th>
                                 <td class="table-item">{{formatDate(attendance.startingDate)}}</td>
                                 <td class="table-item" style="color: forestgreen">{{formatTime(attendance.startingTime)}}</td>
                                 <td class="table-item" style="color: red">{{formatTime(attendance.endingTime)}}</td>
                                 <td ng-if="isAdmin" class="table-item">{{attendance.amount}}</td>
                                 <td ng-if="isAdmin" class="table-item" style="text-align: center">
-                                    <input type="checkbox" ng-model="attendance.isApproved">
+                                    <input type="checkbox" ng-model="attendance.isApproved" ng-disabled="attendance.isApproved">
+                                </td>
+                                <td ng-if="!isAdmin&&attendance.isApproved">
+                                    <i class="fas fa-check" style="color: forestgreen"></i>
+                                </td>
+                                <td ng-if="!isAdmin&&!attendance.isApproved">
+                                    <i class="fas fa-times" style="color: red"></i>
                                 </td>
                                 <!--<td ng-if="isAdmin&&!attendance.isApproved" class="table-item"></td>-->
                                 <td ng-if="isAdmin" class="table-item" style="text-align: center"><i ng-click="deleteAttendance(attendance._id)" class="far fa-trash-alt delete-icon"></i></td>
@@ -100,7 +130,7 @@
                 <div class="col-sm-12">
                     <label>Date</label>
                     <p class="input-group">
-                        <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="attendance.startingDate"
+                            <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="attendance.startingDate"
                                is-open="popup1.opened" ng-required="true" close-text="Close" />
                         <span class="input-group-btn">
                             <i class="fas fa-calendar-alt input-group-text" ng-click="open1()"></i>

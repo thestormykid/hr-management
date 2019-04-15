@@ -54,7 +54,10 @@
                         <td class="table-item"><i ng-click="deleteAttendance(employee._id)" class="far fa-trash-alt delete-icon"></i></td>
                     </tr>
                 </tbody>
+                <!--<ul uib-pagination total-items="bigTotalItems" items-per-page="itemsPerPage" ng-model="bigCurrentPage"-->
+                    <!--max-size="pagination.maxSize" class="pagination-md" boundary-links="true" force-ellipses="true" ng-change="pageChange()"></ul>-->
             </table>
+            <ul uib-pagination total-items="pagination.totalItems" ng-model="pagination.currentPage" ng-change="pageChanged()"></ul>
         </div>
     </div>
 </div>

@@ -1,7 +1,8 @@
 management.controller('attendanceCtrl',['$scope', 'employeeService', 'designationService', 'createShiftService', '$uibModal', 'attendanceService', '$location', '$rootScope', function($scope, employeeService,
      designationService, createShiftService, $uibModal, attendanceService, $location, $rootScope) {
 
-    $scope.userDetails;
+    $scope.userDetails = {};
+    $scope.userId;
     $scope.attendanceList;
     $scope.allEmployees = [];
     $scope.allDesignations = [];
@@ -19,6 +20,47 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
 
     }
 
+    $scope.open2 = function() {
+        $scope.popup2.opened = true;
+    }
+
+    $scope.popup2 = {
+        opened: false
+    }
+
+    $scope.open3 = function() {
+        $scope.popup3.opened = true;
+    }
+
+    $scope.popup3 = {
+        opened: false
+    }
+
+    $scope.updateDatePicker3 = function() {
+        $scope.options3.minDate = $scope.filter.startingDate;
+        attendanceService.applyFilter($scope.filter, $scope.userId)
+            .then(function(success) {
+                $scope.attendanceList = success.filteredList;
+
+            }, function(error) {
+                console.log(error);
+
+            })
+    }
+
+    $scope.updateDatePicker2 = function() {
+        $scope.options2.maxDate = $scope.filter.endingDate;
+
+        attendanceService.applyFilter($scope.filter, $scope.userId)
+            .then(function(success) {
+                $scope.attendanceList = success.filteredList;
+                console.log('filter applied');
+
+            }, function(error) {
+                console.log('error');
+
+            })
+    }
 
     function getAttendance(id) {
         attendanceService.getUserAttendance(id)
@@ -47,11 +89,13 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
 
     // when reports are watched by the admin
     if ($rootScope.isAdmin) {
-        var user = $location.search();
-        getAttendance(user.userData);
+        var userDetails = $location.search().userData;
+        $scope.userId = JSON.parse(userDetails).employeeDetails;
+        getAttendance(userDetails);
 
     } else {
         getAttendance();
+
     }
 
 
@@ -103,43 +147,6 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
 
         });
     };
-
-    // $scope.findEmployees = function() {
-    //     var filter = {};
-    //     if ($scope.filter.designationName) {
-    //         filter.designationName = $scope.filter.designationName;
-    //     }
-    //
-    //     if ($scope.filter.shiftName) {
-    //         filter.shiftName = $scope.filter.shiftName;
-    //     }
-    //
-    //     employeeService.getSelectedEmployees(filter)
-    //         .then(function(allEmployees) {
-    //             hulla.send('employee fetched', 'info');
-    //             $scope.allEmployees = allEmployees
-    //
-    //         }, function(error) {
-    //             console.log(error);
-    //
-    //         })
-    // }
-
-
-
-    // function getAllEmployees() {
-    //     employeeService.getAllEmployee()
-    //         .then(function(allEmployees){
-    //             $scope.allEmployees = allEmployees;
-    //             console.log(allEmployees);
-    //
-    //         }, function(failure) {
-    //             console.log("can't fetch employees")
-    //         })
-    // }
-    //
-    //
-    // getAllEmployees();
 }])
 
 management.controller('attendanceMarkingCtrl', function ($uibModalInstance, designationService, createShiftService, employeeService,
@@ -159,7 +166,6 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
 
     $scope.popup1 = {
         opened: false
-
     };
 
     $scope.markAttendance = function() {

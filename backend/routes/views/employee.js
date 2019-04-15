@@ -85,13 +85,28 @@ module.exports = {
 
 	getAllEmployee: function(req, res) {
 
-		Employee.find({isAdmin: false}).populate('designationId').populate('shiftId').exec(function(err, allEmployee) {
+		var pno = Number(req.query.pno)-1;
+		var itemsPerPage = Number(req.query.itemsPerPage);
+
+		Employee.find({isAdmin: false}).populate('designationId').populate('shiftId').skip(pno*itemsPerPage).limit(itemsPerPage).exec(function(err, allEmployee) {
 			if (err) {
 				console.log(err);
 				throw err;
 			}
 
 			res.json(allEmployee);
+		})
+	},
+
+	getEmployeeCount: function(req, res) {
+
+		Employee.count({isAdmin: false}).exec(function(err, employeeCount) {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+
+			res.json({totalItems: employeeCount});
 		})
 	},
 

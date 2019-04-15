@@ -50,8 +50,12 @@ module.exports = {
 
 	getSelectedEmployee: function(req, res) {
 		var filter = JSON.parse(req.query.filter);
+		var pno = Number(req.query.pno)-1;
+		var itemsPerPage = Number(req.query.itemsPerPage);
 		var designationObject = {};
 		var shiftObject = {};
+		var skip = {};
+		var limit = {};
 
 		if (filter.designationId) {
 			designationObject = {
@@ -85,6 +89,12 @@ module.exports = {
 			},
 			{
 				$sort: { startingDate: 1 }
+			},
+			{
+				$skip: pno*itemsPerPage
+			},
+			limit = {
+				$limit: itemsPerPage
 			}
 		], function(err, selectedEmployeesList) {
 			if (err) {
@@ -112,13 +122,13 @@ module.exports = {
 				$sort: {startingDate: -1}
 			}
 
-			var cond3 = {
-				$match: {isApproved: true}
-			}
+			// var cond3 = {
+			// 	$match: {isApproved: true}
+			// }
 
 			query.push(cond1);
 			query.push(cond2);
-			query.push(cond3);
+			// query.push(cond3);
 
 			return getUserAttendanceHelper(req, res, user, query)
 
@@ -146,6 +156,71 @@ module.exports = {
 				return getUserAttendanceHelper(req, res, user, query);
 			})
 		}
+	},
+
+	applyFilter: function(req, res) {
+		var filter =  JSON.parse(req.query.filter);
+		var userId = req.query.userId;
+		var query = [];
+		var user = req.user;
+
+		if (!user.isAdmin) {
+			var cond = {
+				$match: {employeeDetails: ObjectId(user._id)}
+			}
+
+			query.push(cond)
+		}
+
+		if (userId) {
+			var cond = {
+				$match: {employeeDetails: ObjectId(userId)}
+			}
+
+			query.push(cond);
+		}
+
+		if (filter.startingDate) {
+			cond = {
+				$match: {startingDate: {$gte: new Date(filter.startingDate)}}
+			}
+
+			query.push(cond);
+		}
+
+		if(filter.endingDate) {
+			cond = {
+				$match: {startingDate: {$lte: new Date(filter.endingDate)}}
+
+			}
+
+			query.push(cond);
+		}
+
+		query.push({
+			$sort: {startingDate: -1}
+		})
+
+		Attendance.aggregate(query, function(err, filteredList) {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+
+			res.json({filteredList});
+		})
+	},
+
+	getAttendanceCount: function(req, res) {
+
+		Attendance.count().exec(function(err, totalCount) {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+
+			res.json({totalItems: totalCount});
+		})
 	},
 
 	approveAttendance: function(req, res) {

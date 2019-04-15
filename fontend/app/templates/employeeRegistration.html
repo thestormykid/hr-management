@@ -9,17 +9,17 @@
                 <!--<i ng-click="addFilter()" class="fa fa-plus fa-2x" aria-hidden="true"></i>-->
             <!--</div>-->
             <div class="col-sm-3">
-                <label>Search Employee Code</label>
-                <input ng-model="codeFilter" class="form-control" placeholder="Search Via code">
+                <label>Search Employee Name</label>
+                <input ng-model="nameFilter" class="form-control" placeholder="Search Via Name">
             </div>
             <div class="col-sm-3">
                 <label>Search Desingation Name</label>
-                <input ng-model="designationFilter" class="form-control" placeholder="Search Designation">
+                <input ng-model="codeFilter" class="form-control" placeholder="Search via Code">
             </div>
-            <div class="col-sm-3">
-                <label>Search Shift Name</label>
-                <input ng-model="shiftFilter" class="form-control" placeholder="Search Shift">
-            </div>
+            <!--<div class="col-sm-3">-->
+                <!--<label>Search Shift Name</label>-->
+                <!--<input ng-model="shiftFilter" class="form-control" placeholder="Search Shift">-->
+            <!--</div>-->
         </div>
     </div>
     <div class="row">
@@ -47,8 +47,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="employee in allEmployees | filter: { name: nameFilter, code: codeFilter,
-                                deisngationName: designationFilter, shiftName: shiftFilter} : startsWith">
+                <tr ng-repeat="employee in allEmployees | filter: { name: nameFilter, code: codeFilter} : startsWith">
                     <th scope="row">{{$index + 1}}</th>
                     <td>{{employee.name | uppercase }}</td>
                     <td>{{employee.code | uppercase}}</td>
@@ -59,6 +58,7 @@
                     <td><i ng-click="deleteEmployee(employee)" class="far fa-trash-alt delete-icon"></i></td>
                 </tr>
             </tbody>
+            <ul uib-pagination total-items="pagination.totalItems" ng-model="pagination.currentPage" ng-change="pageChanged()"></ul>
         </table>
     </div>
 </div>
@@ -121,7 +121,7 @@
                 </div>
 
                 <div class="col-sm-12 pull-right">
-                    <button ng-if="toggleButton=='add'" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="createEmployee()">Add Component</button>
+                    <button ng-if="toggleButton=='add'" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="createEmployee()">Add Employee</button>
                     <button ng-if="toggleButton!='add'" class="btn btn-warning"  ng-disabled="myForm.$invalid" ng-click="editEmployee()">Update</button>
                     <button class="btn btn-danger" ng-click="cancelUpdation()">cancel</button>
                 </div>

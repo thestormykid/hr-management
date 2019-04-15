@@ -55,6 +55,8 @@ router.post('/addEmployee', routes.views.employee.addEmployee);
 router.put('/updateEmployee', routes.views.employee.updateEmployee);
 router.delete('/removeEmployee/:id', routes.views.employee.removeEmployee);
 router.post('/signin', passportSignIn, routes.views.employee.signIn);
+router.get('/getEmployeeCount', passportJWT, routes.views.employee.getEmployeeCount);
+
 // router.post('/checkEmail', routes.views.employee.checkEmail);
 router.post('/sendEmail', routes.views.employee.sendEmail);
 router.post('/checkAdmin/:token', routes.views.employee.checkAdmin);
@@ -67,6 +69,9 @@ router.get('/getSelectedEmployee', routes.views.attendance.getSelectedEmployee);
 router.get('/getUserAttendance', passportJWT, routes.views.attendance.getUserAttendance);
 router.delete('/deleteAttendance/:id', routes.views.attendance.deleteAttendance);
 router.put('/approveAttendance', routes.views.attendance.approveAttendance);
+router.get('/apply-filter', passportJWT, routes.views.attendance.applyFilter);
+router.get('/getAttendanceCount', passportJWT, routes.views.attendance.getAttendanceCount);
+
 // router.get('/checkAttendance', routes.views.attendance.checkAttendance);
 
 module.exports = router

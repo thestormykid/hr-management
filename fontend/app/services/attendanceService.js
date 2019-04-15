@@ -29,11 +29,11 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
             return promise.promise;
         },
 
-        getSelectedEmployees: function(filter) {
+        getSelectedEmployees: function(filter, pno, itemsPerPage) {
             var promise = $q.defer();
 
             $http({
-                url:`${BACKEND}/getSelectedEmployee?filter=${JSON.stringify(filter)}`,
+                url:`${BACKEND}/getSelectedEmployee?filter=${JSON.stringify(filter)}&pno=${pno}&itemsPerPage=${itemsPerPage}`,
                 headers: setHeaders(),
                 method:'GET',
 
@@ -104,6 +104,44 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
 
             })
 
+
+            return promise.promise;
+        },
+
+        applyFilter: function(filter, userId) {
+            var promise = $q.defer();
+
+            $http({
+                url: `${BACKEND}/apply-filter?filter=${JSON.stringify(filter)}&userId=${userId}`,
+                method: 'GET',
+                headers: setHeaders()
+
+            }).then(function(success) {
+                promise.resolve(success.data);
+
+            }, function(failure) {
+                promise.reject(failure.data);
+
+            })
+
+            return promise.promise;
+        },
+
+        getAttendanceCount: function() {
+            var promise  = $q.defer();
+
+            $http({
+                url: `${BACKEND}/getAttendanceCount`,
+                method: 'GET',
+                headers: setHeaders()
+
+            }).then(function(success) {
+                promise.resolve(success.data);
+
+            }, function(failure) {
+                promise.reject(failure.data);
+
+            })
 
             return promise.promise;
         }
