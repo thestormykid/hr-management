@@ -2,9 +2,21 @@ var Attendance = require('../../model/attendance');
 var Employee = require('../../model/employee');
 var ObjectId = require('mongodb').ObjectID;
 var async  = require('async');
+var util = require('util');
 
 
 module.exports = {
+
+	getHeaders: function(req, res) {
+
+		Attendance.distinct('factor.componentName', function(err, distinctHeaders) {
+			if (err) {
+				console.log(err);
+			}
+
+			res.json(distinctHeaders);
+		})
+	},
 
 	markAttendance: function(req, res) {
 		var markedAttendance = req.body.attendanceDetails;
@@ -42,8 +54,6 @@ module.exports = {
 				throw err;
 			}
 
-			console.log(attendanceDeleted)
-
 			res.json('successfully Deleted');
 		})
 	},
@@ -56,6 +66,8 @@ module.exports = {
 		var shiftObject = {};
 		var skip = {};
 		var limit = {};
+		var query = [];
+
 
 		if (filter.designationId) {
 			designationObject = {
@@ -67,117 +79,6 @@ module.exports = {
 			shiftObject = {
 				'employee.shiftId': ObjectId(filter.shiftId)
 			}
-		}
-
-		Attendance.aggregate([
-			{
-				$lookup: {
-					from: 'employees',
-					localField: 'employeeDetails',
-					foreignField: '_id',
-					as: 'employee'
-				}
-			},
-			{
-				$unwind: '$employee'
-			},
-			{
-				$match: designationObject
-			},
-			{
-				$match: shiftObject
-			},
-			{
-				$sort: { startingDate: 1 }
-			},
-			{
-				$skip: pno*itemsPerPage
-			},
-			limit = {
-				$limit: itemsPerPage
-			}
-		], function(err, selectedEmployeesList) {
-			if (err) {
-				console.log(err);
-				throw err;
-			}
-
-			res.json(selectedEmployeesList);
-		})
-	},
-
-	getUserAttendance: function(req, res) {
-		var user = req.query.uId;
-
-		var query = []
-
-		// for employee
-		if(user == "undefined") {
-			user = req.user;
-			var cond1 = {
-				$match: {employeeDetails: ObjectId(user._id)}
-			}
-
-			var cond2 = {
-				$sort: {startingDate: -1}
-			}
-
-			// var cond3 = {
-			// 	$match: {isApproved: true}
-			// }
-
-			query.push(cond1);
-			query.push(cond2);
-			// query.push(cond3);
-
-			return getUserAttendanceHelper(req, res, user, query)
-
-		// for admin
-		} else {
-			user = JSON.parse(user);
-
-			Employee.findOne({_id: user.employeeDetails}, function(err, user) {
-				if (err) {
-					console.log(err);
-					throw err;
-				}
-
-				var cond1 = {
-					$match: {employeeDetails: ObjectId(user._id)}
-				}
-
-				var cond2 = {
-					$sort: {startingDate: -1}
-				}
-
-				query.push(cond1);
-				query.push(cond2);
-
-				return getUserAttendanceHelper(req, res, user, query);
-			})
-		}
-	},
-
-	applyFilter: function(req, res) {
-		var filter =  JSON.parse(req.query.filter);
-		var userId = req.query.userId;
-		var query = [];
-		var user = req.user;
-
-		if (!user.isAdmin) {
-			var cond = {
-				$match: {employeeDetails: ObjectId(user._id)}
-			}
-
-			query.push(cond)
-		}
-
-		if (userId) {
-			var cond = {
-				$match: {employeeDetails: ObjectId(userId)}
-			}
-
-			query.push(cond);
 		}
 
 		if (filter.startingDate) {
@@ -198,29 +99,197 @@ module.exports = {
 		}
 
 		query.push({
-			$sort: {startingDate: -1}
-		})
+				$lookup: {
+					from: 'employees',
+					localField: 'employeeDetails',
+					foreignField: '_id',
+					as: 'employee'
+				}
+			}, {
+				$unwind: '$employee'
+			}, {
+				$match: designationObject
+			}, {
+				$match: shiftObject
+			}, {
+				$sort: { startingDate: 1 }
+			}, {
+				$skip: pno*itemsPerPage
+			}, {
+				$limit: itemsPerPage
+			});
 
-		Attendance.aggregate(query, function(err, filteredList) {
+
+		Attendance.aggregate(query, function(err, selectedEmployeesList) {
 			if (err) {
 				console.log(err);
 				throw err;
 			}
 
-			res.json({filteredList});
+			res.json(selectedEmployeesList);
 		})
 	},
 
-	getAttendanceCount: function(req, res) {
+	getUserAttendance: function(req, res) {
+		var user = req.query.uId;
+		var pno = Number(req.query.pno)-1;
+		var itemsPerPage = Number(req.query.itemsPerPage);
+		var filter = JSON.parse(req.query.filter);
 
-		Attendance.count().exec(function(err, totalCount) {
-			if (err) {
-				console.log(err);
-				throw err;
+		var query = [];
+
+		// for employee
+		if(user == "undefined") {
+			user = req.user;
+
+			if (filter.startingDate) {
+				cond = {
+					$match: {startingDate: {$gte: new Date(filter.startingDate)}}
+				}
+
+				query.push(cond);
 			}
 
-			res.json({totalItems: totalCount});
-		})
+			if(filter.endingDate) {
+				cond = {
+					$match: {startingDate: {$lte: new Date(filter.endingDate)}}
+
+				}
+
+				query.push(cond);
+			}
+
+			query.push({
+				$match: {employeeDetails: ObjectId(user._id)}
+			}, {
+				$sort: {startingDate: -1}
+			})
+
+			query.push({
+				$skip: (pno)*itemsPerPage
+			}, {
+				$limit: itemsPerPage
+			})
+
+			console.log(query);
+
+			// query.push(cond3);
+			return getUserAttendanceHelper(req, res, user, query)
+
+		// for admin
+		} else {
+			user = JSON.parse(user);
+
+			Employee.findOne({_id: user.employeeDetails}, function(err, user) {
+				if (err) {
+					console.log(err);
+					throw err;
+				}
+
+				if (filter.startingDate) {
+					cond = {
+						$match: {startingDate: {$gte: new Date(filter.startingDate)}}
+					}
+
+					query.push(cond);
+				}
+
+				if(filter.endingDate) {
+					cond = {
+						$match: {startingDate: {$lte: new Date(filter.endingDate)}}
+
+					}
+
+					query.push(cond);
+				}
+
+				query.push({
+					$match: {employeeDetails: ObjectId(user._id)}
+				}, {
+					$sort: {startingDate: -1}
+				})
+
+				query.push({
+					$skip: (pno)*itemsPerPage
+				}, {
+					$limit: itemsPerPage
+				})
+
+				return getUserAttendanceHelper(req, res, user, query);
+			})
+		}
+	},
+
+	getAttendanceCount: function(req, res) {
+		var user = req.user;
+		var query = {};
+		var query2 = {};
+		var adminCheckingUserId = req.query.userId;
+
+		if (req.query.filter != "undefined") {
+			var filter = JSON.parse(req.query.filter);
+		}
+
+
+
+		if (filter && filter.startingDate) {
+			console.log("*****************************************");
+			if (query) {
+				query.startingDate = {};
+				query.startingDate.$gte = new Date(filter.startingDate)
+
+			}
+		}
+
+		if(filter&&filter.endingDate) {
+			if (query) {
+				query.startingDate.$lte = new Date(filter.endingDate)
+
+			} else {
+				query.startingDate = {};
+				query.startingDate.$lte = new Date(filter.endingDate);
+
+			}
+		}
+		// for user view
+		if (user.isAdmin == 'false') {
+			query.employeeDetails = ObjectId(user._id);
+
+			return attendanceCount(req, res, query);
+		// for admin to user view
+		} else if (adminCheckingUserId != "undefined") {
+			query.employeeDetails = ObjectId(adminCheckingUserId);
+
+			return attendanceCount(req, res, query);
+		// for admin to reports
+		} else {
+
+			if (filter&&filter.designationId) {
+				query2.designationId = filter.designationId;
+
+			}
+
+			if (filter&&filter.shiftId) {
+				query2.shiftId = filter.shiftId;
+
+			}
+
+			Employee.find(query2, {_id: 1}, function(err, employee_ids) {
+				if (err) {
+					console.log(err);
+					throw err;
+				}
+
+				var eId = [];
+				employee_ids.forEach(function(employee_ids) {
+					eId.push(employee_ids._id);
+				})
+
+				query.employeeDetails = {$in: eId};
+
+				return attendanceCount(req, res, query);
+			})
+		}
 	},
 
 	approveAttendance: function(req, res) {
@@ -246,8 +315,6 @@ module.exports = {
 				throw err;
 			}
 
-			console.log(allUpdatedAttendance)
-
 			res.json({message: 'approved successfully'});
 		})
 	}
@@ -255,40 +322,36 @@ module.exports = {
 
 function getUserAttendanceHelper(req, res, user, query) {
 
+	Employee.findOne({_id: ObjectId(user._id)}).populate('designationId').populate('shiftId').exec(function(err, employee) {
+		if (err) {
+			console.log(err);
+			throw err;
+		}
+
 		Attendance.aggregate(query, function(err, attendanceList) {
 			if (err) {
 				console.log(err);
 				throw err;
 			}
 
-			Employee.findOne({_id: ObjectId(user._id)}).populate('designationId').populate('shiftId').exec(function(err, employee) {
-				if (err) {
-					console.log(err);
-					throw err;
-				}
+			console.log(attendanceList);
 
-				return res.json({ 'attendanceList': attendanceList, 'user': employee});
-			})
+			return res.json({ 'attendanceList': attendanceList, 'user': employee});
 		})
+	})
+}
 
-		// Attendance.aggregate([
-		// 	{ $match: { employeeDetails: ObjectId(user._id) }},
-		// 	// { $select: { amount: 0 } },
-		// 	{ $sort: { startingDate: -1 } },
+function attendanceCount(req, res, query) {
 
-		// ], function(err, attendanceList) {
-		// 	if (err) {
-		// 		console.log(err);
-		// 		throw err;
-		// 	}
+	console.log(query);
 
-		// 	Employee.findOne({_id: ObjectId(user._id)}).populate('designationId').populate('shiftId').exec(function(err, employee) {
-		// 		if (err) {
-		// 			console.log(err);
-		// 			throw err;
-		// 		}
+	Attendance.count(query).exec(function(err, totalCount) {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+			console.log(totalCount);
 
-		// 		return res.json({ 'attendanceList': attendanceList, 'user': employee});
-		// 	})
-		// })
+			return res.json({totalItems: totalCount});
+	})
 }

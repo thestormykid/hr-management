@@ -7,8 +7,29 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
     $scope.allEmployees = [];
     $scope.allDesignations = [];
     $scope.allShifts = [];
-    $scope.filter = {};
+    var dt = new Date();
+    $scope.filter = {
+        startingDate: new Date(dt.setDate(dt.getDate()-7)),
+        endingDate: new Date(Date.now())
+    };
+
     var hulla = new hullabaloo();
+    $scope.propertyName = 'amount';
+    $scope.reverse = true;
+
+    $scope.pagination = {};
+    $scope.pagination.itemsPerPage = 10;
+    $scope.pagination.totalItems = 64;
+    $scope.pagination.currentPage = 1;
+
+    $scope.sortBy = function(propertyName) {
+        $scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
+        $scope.propertyName = propertyName;
+    };
+
+    $scope.pageChanged = function() {
+        getData();
+    }
 
     $scope.formatTime = function(time) {
         return moment(time).format('HH:mm');
@@ -38,48 +59,21 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
 
     $scope.updateDatePicker3 = function() {
         $scope.options3.minDate = $scope.filter.startingDate;
-        attendanceService.applyFilter($scope.filter, $scope.userId)
-            .then(function(success) {
-                $scope.attendanceList = success.filteredList;
+        getData();
 
-            }, function(error) {
-                console.log(error);
-
-            })
     }
 
     $scope.updateDatePicker2 = function() {
         $scope.options2.maxDate = $scope.filter.endingDate;
+        getData();
 
-        attendanceService.applyFilter($scope.filter, $scope.userId)
-            .then(function(success) {
-                $scope.attendanceList = success.filteredList;
-                console.log('filter applied');
-
-            }, function(error) {
-                console.log('error');
-
-            })
     }
-
-    function getAttendance(id) {
-        attendanceService.getUserAttendance(id)
-            .then(function(userInfo) {
-                $scope.userDetails = userInfo.user;
-                $scope.attendanceList = userInfo.attendanceList;
-
-            }, function() {
-
-            })
-    }
-
 
     $scope.deleteAttendance = function(attendanceId) {
         attendanceService.deleteAttendance(attendanceId)
             .then(function(message) {
                 hulla.send(message, 'success');
-                var user = $location.search();
-                getAttendance(user.userData);
+                getData();
 
             }, function(error) {
                 console.log(error);
@@ -87,20 +81,7 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
             })
     }
 
-    // when reports are watched by the admin
-    if ($rootScope.isAdmin) {
-        var userDetails = $location.search().userData;
-        $scope.userId = JSON.parse(userDetails).employeeDetails;
-        getAttendance(userDetails);
-
-    } else {
-        getAttendance();
-
-    }
-
-
     $scope.approveAttendance = function() {
-
         var seggregatedIsApproved = _.groupBy($scope.attendanceList, 'isApproved');
         var helperList = [];
 
@@ -139,22 +120,61 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
         modalInstance.result.then(function(status) {
             if (status == 'success') {
                 hulla.send('attendance marked', 'success');
-                getAttendance()
-                
+                getData();
             }
 
         }, function() {
 
         });
     };
+
+    function getCount(userId) {
+        attendanceService.getAttendanceCount(userId, $scope.filter)
+            .then(function(success) {
+                console.log(success.totalItems);
+                $scope.pagination.totalItems = success.totalItems;
+
+            }, function(failure) {
+                console.log(failure);
+
+            })
+    }
+
+    function getAttendance(user) {
+        attendanceService.getUserAttendance(user, $scope.filter, $scope.pagination.currentPage, $scope.pagination.itemsPerPage)
+            .then(function(userInfo) {
+                $scope.userDetails = userInfo.user;
+                $scope.attendanceList = userInfo.attendanceList;
+
+            }, function() {
+
+            })
+    }
+
+    function getData() {
+        // when reports are watched by the admin
+        if ($rootScope.isAdmin) {
+            var userDetails = $location.search().userData;
+            $scope.userId = JSON.parse(userDetails).employeeDetails;
+            getAttendance(userDetails);
+            getCount($scope.userId);
+
+        } else {
+            getAttendance();
+            getCount();
+        }
+    }
+
+    getData();
+
 }])
 
 management.controller('attendanceMarkingCtrl', function ($uibModalInstance, designationService, createShiftService, employeeService,
                                                          $scope, workingShiftService, data, attendanceService) {
-
     $scope.allFactors = [];
     $scope.employee = data;
     $scope.attendance = {};
+    $scope.attendance.factor = [];
     $scope.format = 'dd-MMMM-yyyy';
     $scope.factor = [];
     var hulla = new hullabaloo();
@@ -171,12 +191,15 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
     $scope.markAttendance = function() {
         $scope.attendance.employeeDetails = $scope.employee._id;
         $scope.attendance.amount = calculateSalary();
+        addFactors();
+
 
         attendanceService.markAttendance($scope.attendance)
             .then(function(attendanceStatus) {
                 console.log(attendanceStatus);
                 if (attendanceStatus == 'attendance present') {
                     hulla.send('attendance already marked', 'info');
+                    $scope.attendance.factor = [];
 
                 } else {
                     $uibModalInstance.close('success');
@@ -206,8 +229,19 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
         var endingMinutes = getTime(endingTime);
         var expectedStartingMinutes = getTime(expectedStartingTime);
         var expectedEndingMinutes = getTime(expectedEndingTime);
-        var allowance = $scope.factor[0].type == 'allowance' ? $scope.factor[0]: $scope.factor[1];
-        var reduction = $scope.factor[0].type=='reduction' ? $scope.factor[0]:$scope.factor[1];
+        if ($scope.factor[0]) {
+            var allowance = $scope.factor[0].type == 'allowance' ? $scope.factor[0] : $scope.factor[1];
+            var reduction = $scope.factor[0].type == 'reduction' ? $scope.factor[0] : $scope.factor[1];
+            if (!allowance) {
+                allowance = 0;
+            }
+            if (!reduction) {
+                reduction = 0;
+            }
+        } else {
+            allowance = 0;
+            reduction = 0;
+        }
         var allowanceAmount = 0;
         var reductionAmount = 0;
 
@@ -220,20 +254,34 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
         }
 
         if (endingTime< expectedStartingTime || startingTime>expectedEndingTime) {
+            addFactorToAttendance('reduction', amountPerDay)
             amountPerDay = Math.abs((endingMinutes - startingMinutes)*allowanceAmount);
+            addFactorToAttendance('allowance', amountPerDay)
 
-        } else if (startingTime> expectedStartingTime && endingTime< expectedEndingTime) {
-            amountPerDay +=  -(startingMinutes-expectedStartingMinutes)*reductionAmount - (expectedEndingMinutes-endingMinutes)*reductionAmount
+        } else if (startingTime > expectedStartingTime && endingTime < expectedEndingTime) {
+            var reducedAmount = (startingMinutes-expectedStartingMinutes)*reductionAmount + (expectedEndingMinutes-endingMinutes)*reductionAmount;
+            amountPerDay += -reducedAmount;
             amountPerDay = amountPerDay <= 0 ? 0: amountPerDay;
+            addFactorToAttendance('reduction', Math.min(reducedAmount, amountPerDay));
 
         } else if (startingTime < expectedStartingTime && endingTime > expectedEndingTime) {
-            amountPerDay += ((expectedStartingMinutes-startingMinutes) + (endingMinutes - expectedEndingMinutes))*allowanceAmount;
+            var allowedAmount = ((expectedStartingMinutes-startingMinutes) + (endingMinutes - expectedEndingMinutes))*allowanceAmount;
+            amountPerDay += allowedAmount;
+            addFactorToAttendance('allowance', allowedAmount);
 
         } else if (startingTime > expectedStartingTime && endingTime > expectedEndingTime) {
-            amountPerDay += (endingMinutes-expectedEndingMinutes)*allowanceAmount - (startingMinutes - expectedStartingMinutes)*reductionAmount
+            var allowedAmount = (endingMinutes-expectedEndingMinutes)*allowanceAmount;
+            var reducedAmount = (startingMinutes - expectedStartingMinutes)*reductionAmount
+            amountPerDay += allowedAmount - reducedAmount;
+            addFactorToAttendance('allowance', allowedAmount);
+            addFactorToAttendance('reduction', reducedAmount);
 
         } else if (startingTime < expectedStartingTime && endingTime < expectedEndingTime) {
-            amountPerDay += (expectedStartingMinutes - startingMinutes)*allowanceAmount - (expectedEndingMinutes-endingMinutes)*reductionAmount;
+            var allowedAmount = (expectedStartingMinutes - startingMinutes)*allowanceAmount;
+            var reducedAmount = (expectedEndingMinutes-endingMinutes)*reductionAmount;
+            amountPerDay += allowedAmount - reducedAmount;
+            addFactorToAttendance('allowance', allowedAmount);
+            addFactorToAttendance('reduction', reducedAmount);
 
         }
 
@@ -243,6 +291,15 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
     $scope.cancelUpdation = function() {
         $uibModalInstance.dismiss('cancel');
 
+    }
+
+    function addFactorToAttendance(type, amount) {
+        $scope.attendance.factor.push({
+            componentType: type,
+            salaryValue: amount,
+            componentName: type,
+            salaryType: 'amount'
+        })
     }
 
     function getSelectedFactors() {
@@ -266,6 +323,19 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
             })
     }
 
+    function addFactors() {
+        var components = $scope.employee.designationId.components;
+
+        _.forEach(components, function(singleComponent) {
+            if (singleComponent.salaryType == 'amount') {
+                singleComponent.salaryValue = (singleComponent.salaryValue/30);
+            }
+
+            $scope.attendance.factor.push(singleComponent);
+        })
+    }
+
     getFactor();
     getSelectedFactors();
+
 });

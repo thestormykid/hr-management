@@ -3,19 +3,41 @@
     <div class="employee-filters">
         <form novalidate name="myForm" class="form-group">
             <div class="row">
-                <div class="col-sm-3 indexing">
+                <div class="col-sm-3">
                     <label>Select Designation</label>
                     <select class="form-control btn-default" ng-model="filter.designation">
                         <option value="" selected>All Designations</option>
                         <option ng-repeat="designation in allDesignations" value="{{designation}}">{{designation.name}}</option>
                     </select>
                 </div>
-                <div class="col-sm-3 indexing">
+                <div class="col-sm-3">
                     <label>Select Shift Name</label>
                     <select class="form-control btn-default" ng-model="filter.shift">
                         <option value="" selected>All Shifts</option>
                         <option ng-repeat="shift in allShifts" value="{{shift}}">{{shift.shiftName}}</option>
                     </select>
+                </div>
+                <div class="col-sm-2">
+                    <label>Start Date</label>
+                    <p class="input-group">
+                        <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="filter.startingDate"
+                               is-open="popup2.opened" ng-required="true" close-text="Close" datepicker-options="options2"
+                               ng-change="updateDatePicker3()" />
+                        <span class="input-group-btn">
+                        <i class="fas fa-calendar-alt input-group-text" ng-click="open2()"></i>
+                    </span>
+                    </p>
+                </div>
+                <div class="col-sm-2">
+                    <label>End Date</label>
+                    <p class="input-group indexing">
+                        <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="filter.endingDate"
+                               is-open="popup3.opened" ng-required="true" close-text="Close" datepicker-options="options3"
+                               ng-change="updateDatePicker2()" />
+                        <span class="input-group-btn">
+                        <i class="fas fa-calendar-alt input-group-text" ng-click="open3()"></i>
+                    </span>
+                    </p>
                 </div>
                 <div class="col-sm-2">
                     <label>&nbsp;</label>
@@ -26,6 +48,7 @@
             </div>
         </form>
     </div>
+
     <div ng-if="allEmployees.length!=0" class="employee-list">
         <div class="card employee-details">
             <table class="table table-borderless">
@@ -34,22 +57,56 @@
                         <th scope="col">#</th>
                         <th scope="col">E. Name</th>
                         <th scope="col">E. Code</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Enter</th>
-                        <th scope="col">Exit</th>
-                        <th scope="col">Amount</th>
+                        <th scope="col" ng-click="sortBy('startingDate')" style="cursor: pointer">
+                            Date
+                            <span class="sortorder" ng-show="propertyName === 'startingDate'" ng-class="{reverse: reverse}"></span>
+                        </th>
+                        <th scope="col" ng-click="sortBy('startingTime')" style="cursor: pointer">
+                            Enter
+                            <span class="sortorder" ng-show="propertyName === 'startingTime'" ng-class="{reverse: reverse}"></span>
+                        </th>
+                        <th scope="col" ng-click="sortBy('endingTime')" style="cursor: pointer">
+                            Exit
+                            <span class="sortorder" ng-show="propertyName === 'endingTime'" ng-class="{reverse: reverse}"></span>
+                        </th>
+                        <th scope="col">
+                            basic
+                        </th>
+                        <th scope="col" ng-repeat="headers in tableHeaders">
+                            {{headers}}
+                        </th>
+                        <th scope="col">
+                            allowance
+                        </th>
+                        <th scope="col">
+                            reduction
+                        </th>
+                        <th scope="col" ng-click="sortBy('amount')" style="cursor: pointer">
+                            Amount
+                            <span class="sortorder" ng-show="propertyName === 'amount'" ng-class="{reverse: reverse}"></span>
+                        </th>
                         <th scope="col">Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="employee in allEmployees | filter: { name: nameFilter, code: codeFilter,
-                      deisngationName: designationFilter, shiftName: shiftFilter} : startsWith | orderBy: 'employee.name'">
+                      deisngationName: designationFilter, shiftName: shiftFilter} : startsWith| orderBy: propertyName: reverse ">
                         <th class="table-item" scope="row">{{$index + 1}}.</th>
                         <td class="table-item"><a class="emp-name" ng-click="singleUserReport(employee)">{{employee.employee.name | uppercase }}</a></td>
                         <td class="table-item">{{employee.employee.code | uppercase}}</td>
                         <td class="table-item">{{formatDate(employee.startingDate)}}</td>
                         <td class="table-item" style="color:forestgreen">{{formatTime(employee.startingTime)}}</td>
                         <td class="table-item" style="color:red">{{formatTime(employee.endingTime)}}</td>
+                        <td class="table-item">{{getTableFieldData(employee, 'basic')}}</td>
+                        <td class="table-item" ng-repeat="header in tableHeaders">
+                            {{getTableFieldData(employee, header)}}
+                        </td>
+                        <td class="table-item">
+                            {{getTableFieldData(employee, 'allowance')}}
+                        </td>
+                        <td class="table-item">
+                            {{getTableFieldData(employee, 'reduction')}}
+                        </td>
                         <td class="table-item">{{employee.amount}}</td>
                         <td class="table-item"><i ng-click="deleteAttendance(employee._id)" class="far fa-trash-alt delete-icon"></i></td>
                     </tr>
@@ -80,11 +137,11 @@
                                 <!--<input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="attendance.startingDate"-->
                                        <!--is-open="popup1.opened" ng-required="true" close-text="Close" ng-change="setMinDate()" />-->
                                 <!--<span class="input-group-btn">-->
-                                    <!--<i class="fas fa-calendar-alt input-group-text" ng-click="open1()"></i>-->
-                                <!--</span>-->
                             <!--</p>-->
                         <!--</div>-->
-                        <!--<div class="col-sm-6">-->
+                        <!--<div class="col-sm-6">--                                    <!--<i class="fas fa-calendar-alt input-group-text" ng-click="open1()"></i>-->
+<!--</span>-->
+>
                             <!--<label>End Date</label>-->
                             <!--<p class="input-group">-->
                                 <!--<input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="attendance.endingDate"-->

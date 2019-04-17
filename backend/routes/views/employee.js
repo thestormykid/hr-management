@@ -137,30 +137,6 @@ module.exports = {
 		})
 	},
 
-	// checkEmail: function(req, res) {
-
-	// 	var admin = req.body.admin;
-	// 	var email = admin.email;
-	// 	console.log('**************************', email)
-
-	// 	emailExistence.check('hanugautam96@gmail.com', function(err, emailVerfied) {
-	// 		if (err) {
-	// 			console.log(err);
-	// 			throw err;
-	// 		}
-
-	// 		console.log('askjdlhasldkjhaslkdjash');
-
-	// 		if (emailVerfied) {
-	// 			res.json({ success: true, message: 'valid Email' });
-
-	// 		} else {
-	// 			return res.json({ success: false, message: 'invalid Email'});
-
-	// 		}
-	// 	})
-	// },
-
 	sendEmail: function(req, res) {
 
 		var mail = req.body.mail;
@@ -222,7 +198,6 @@ module.exports = {
 		updatedData.firstLogin = false;
 
 		var id = req.user._id;
-		console.log(req.user);
 
 		Employee.findByIdAndUpdate(id, updatedData, function(err, passwordUpdated) {
 			if (err) {

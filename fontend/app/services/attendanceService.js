@@ -48,11 +48,13 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
             return promise.promise;
         },
 
-        getUserAttendance: function(userId) {
+        getUserAttendance: function(userId, filter, pno, itemsPerPage) {
             var promise = $q.defer();
 
+            console.log(filter);
+
             $http({
-                url: `${BACKEND}/getUserAttendance?uId=${userId}`,
+                url: `${BACKEND}/getUserAttendance?uId=${userId}&pno=${pno}&itemsPerPage=${itemsPerPage}&filter=${JSON.stringify(filter)}`,
                 method: 'GET',
                 headers: setHeaders()
 
@@ -108,11 +110,11 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
             return promise.promise;
         },
 
-        applyFilter: function(filter, userId) {
+        applyFilter: function(filter, userId, pno, itemsPerPage) {
             var promise = $q.defer();
 
             $http({
-                url: `${BACKEND}/apply-filter?filter=${JSON.stringify(filter)}&userId=${userId}`,
+                url: `${BACKEND}/apply-filter?filter=${JSON.stringify(filter)}&userId=${userId}&pno=${pno}&itemsPerPage=${itemsPerPage}`,
                 method: 'GET',
                 headers: setHeaders()
 
@@ -127,11 +129,30 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
             return promise.promise;
         },
 
-        getAttendanceCount: function() {
+        getAttendanceCount: function(userId, filter) {
             var promise  = $q.defer();
 
             $http({
-                url: `${BACKEND}/getAttendanceCount`,
+                url: `${BACKEND}/getAttendanceCount?userId=${userId}&filter=${JSON.stringify(filter)}`,
+                method: 'GET',
+                headers: setHeaders()
+
+            }).then(function(success) {
+                promise.resolve(success.data);
+
+            }, function(failure) {
+                promise.reject(failure.data);
+
+            })
+
+            return promise.promise;
+        },
+
+        getHeaders: function() {
+            var promise = $q.defer();
+
+            $http({
+                url: `${BACKEND}/get-headers`,
                 method: 'GET',
                 headers: setHeaders()
 

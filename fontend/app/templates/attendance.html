@@ -7,10 +7,6 @@
         </div>
         <div class="row">
             <div class="col-sm-2">
-                <label>Name</label>
-                <input type="text" class="form-control" placeholder="Search Name">
-            </div>
-            <div class="col-sm-2">
                 <label>Start Date</label>
                 <p class="input-group">
                     <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="filter.startingDate"
@@ -76,17 +72,29 @@
                         <thead>
                             <tr style="text-align: center">
                                 <th scope="col">#</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Check in</th>
-                                <th scope="col">Check out</th>
-                                <th ng-if="isAdmin" scope="col">Amount</th>
+                                <th scope="col" ng-click="sortBy('startingDate')" style="cursor: pointer">
+                                    Date
+                                    <span class="sortorder" ng-show="propertyName === 'startingDate'" ng-class="{reverse: reverse}"></span>
+                                </th>
+                                <th scope="col" ng-click="sortBy('startingTime')" style="cursor: pointer">
+                                    Check in
+                                    <span class="sortorder" ng-show="propertyName === 'startingTime'" ng-class="{reverse: reverse}"></span>
+                                </th>
+                                <th scope="col" ng-click="sortBy('endingTime')" style="cursor: pointer">
+                                    Check out
+                                    <span class="sortorder" ng-show="propertyName === 'endingTime'" ng-class="{reverse: reverse}"></span>
+                                </th>
+                                <th ng-if="isAdmin" scope="col" ng-click="sortBy('amount')" style="cursor: pointer">
+                                    Amount
+                                    <span class="sortorder" ng-show="propertyName === 'amount'" ng-class="{reverse: reverse}"></span>
+                                </th>
                                 <th scope="col">Approved</th>
                                 <th ng-if="isAdmin" scope="col">Delete</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="attendance in attendanceList | filter: { name: nameFilter, code: codeFilter,
-                                        deisngationName: designationFilter, shiftName: shiftFilter} : startsWith" style="text-align: center">
+                                        deisngationName: designationFilter, shiftName: shiftFilter} : startsWith | orderBy:propertyName: reverse" style="text-align: center">
                                 <th class="table-item" scope="row">{{$index + 1}}.</th>
                                 <td class="table-item">{{formatDate(attendance.startingDate)}}</td>
                                 <td class="table-item" style="color: forestgreen">{{formatTime(attendance.startingTime)}}</td>
@@ -106,6 +114,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <ul uib-pagination total-items="pagination.totalItems" ng-model="pagination.currentPage" ng-change="pageChanged()"></ul>
                 </div>
                 <div ng-if="isAdmin">
                     <br>

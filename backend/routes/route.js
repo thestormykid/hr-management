@@ -65,13 +65,16 @@ router.put('/update-password', passportJWT, routes.views.employee.updatePassword
 
 // attendance
 router.post('/markAttendance', passportJWT, routes.views.attendance.markAttendance);
-router.get('/getSelectedEmployee', routes.views.attendance.getSelectedEmployee);
+router.get('/getSelectedEmployee', passportJWT, routes.views.attendance.getSelectedEmployee);
 router.get('/getUserAttendance', passportJWT, routes.views.attendance.getUserAttendance);
 router.delete('/deleteAttendance/:id', routes.views.attendance.deleteAttendance);
 router.put('/approveAttendance', routes.views.attendance.approveAttendance);
-router.get('/apply-filter', passportJWT, routes.views.attendance.applyFilter);
+router.get('/get-headers', passportJWT, routes.views.attendance.getHeaders);
+// router.get('/apply-filter', passportJWT, routes.views.attendance.applyFilter);
 router.get('/getAttendanceCount', passportJWT, routes.views.attendance.getAttendanceCount);
 
+
+// router.get('/testing', routes.views.attendance.testing);
 // router.get('/checkAttendance', routes.views.attendance.checkAttendance);
 
 module.exports = router

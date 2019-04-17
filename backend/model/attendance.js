@@ -6,7 +6,8 @@ var schema = new mongoose.Schema({
 	endingTime: {type: Date, required: true},
 	employeeDetails: {type: mongoose.Schema.Types.ObjectId, ref:'employee', required: true},
 	amount: {type: Number, required: true},
-	isApproved: {type: Boolean, default: false}
+	isApproved: {type: Boolean, default: false},
+	factor: []
 })
 
 module.exports = mongoose.model('attendance', schema);
