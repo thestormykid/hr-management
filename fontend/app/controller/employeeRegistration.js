@@ -152,11 +152,18 @@ management.controller('ModalInstanceCtrl', function ($uibModalInstance, designat
         _employee.password = "12345"
 
         employeeService.addEmployee(_employee)
-            .then(function(allEmployees) {
-                $uibModalInstance.close('add');
+            .then(function(employeeStatus) {
+                console.log(employeeStatus.message);
+                if (employeeStatus.message) {
+                    hulla.send(employeeStatus.message, 'info');
+                    return;
 
+                } else {
+                    $uibModalInstance.close('add');
+
+                }
             }, function(error) {
-                console.log('not able to add employees');
+                hulla.send(error, 'danger');
 
             })
     }

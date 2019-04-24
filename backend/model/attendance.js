@@ -10,4 +10,10 @@ var schema = new mongoose.Schema({
 	factor: []
 })
 
+
+schema.pre('validate', function() {
+
+})
+
+
 module.exports = mongoose.model('attendance', schema);

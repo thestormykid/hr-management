@@ -167,6 +167,7 @@ nav {
 .employee-details {
     padding: 1em;
     margin-top: 1em;
+    overflow-x: auto;
 }
 
 .popover-content {

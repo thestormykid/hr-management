@@ -8,12 +8,12 @@ module.exports = {
 		salaryComponent.create(component, function(err, result) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
-			res.json(result);
+			res.status(200).json(result);
 		})
-
 	},
 
 
@@ -22,10 +22,11 @@ module.exports = {
 		salaryComponent.find({}, function(err, allComponents) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
-			res.json(allComponents);
+			res.status(200).json(allComponents);
 		})
 	},
 
@@ -35,10 +36,11 @@ module.exports = {
 		salaryComponent.deleteOne({_id: componentNeedToBeDeletedId}, function(err, removedComponent) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
-			res.json('component removed');
+			res.status(200).json('component removed');
 
 		})
 	},
@@ -50,11 +52,11 @@ module.exports = {
 		salaryComponent.findByIdAndUpdate(updatedComponent._id, updatedComponent, function(err, status) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
-			console.log(status);
-			res.json('item updated successfully');
+			res.status(200).json('item updated successfully');
 		})
 	}
 

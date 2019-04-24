@@ -7,15 +7,14 @@ module.exports = {
 
 	addShift: function(req, res) {
 		var shift = req.body.shift;
-		console.log(shift);
 
 		Shift.create(shift, function(err, shiftAdded) {
 			if(err) {
 				console.log(err);
-				return err;
+				return	res.status(500).json(err);
 			}
 
-			res.json('shift added');
+			res.status(200).json('shift added');
 		})
 	},
 
@@ -24,10 +23,11 @@ module.exports = {
 		Shift.find({}, function(err, allShifts) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
-			res.json(allShifts);
+			res.status(200).json(allShifts);
 		})
 	},
 
@@ -38,32 +38,35 @@ module.exports = {
 		Factor.find({shiftId: shiftNeedToBeDeleteId}, function(err, checkShift) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			if (checkShift.length != 0) {
-				return res.json("can't deleted, dependancy over shift factor");
+				return res.status(300).json("can't deleted, dependancy over shift factor");
+
 			}
 
 			// check dependancy with employee
 			Employee.find({shiftId: shiftNeedToBeDeleteId}, function(err, checkEmployee) {
 				if (err) {
 					console.log(err);
-					throw err;
+					return	res.status(500).json(err);
 				}
 
 				if (checkEmployee.length != 0) {
-					return res.json("can't deleted, dependancy over employee");
+					return res.status(300).json("can't deleted, dependancy over employee");
 
 				} else {
 
 					Shift.deleteOne({_id: shiftNeedToBeDeleteId}, function(err, deletedShift) {
 						if (err) {
 							console.log(err);
-							throw err;
+							return	res.status(500).json(err);
+
 						}
 
-						res.json('shift deleted successfully');
+						res.status(200).json('shift deleted successfully');
 					})
 
 				}
@@ -73,16 +76,17 @@ module.exports = {
 
 	updateShift: function(req, res) {
 		var shiftNeedToBeUpdated = JSON.parse(req.body.shift);
-		console.log(shiftNeedToBeUpdated);
+
 		delete shiftNeedToBeUpdated['$$hashKey'];
 
 		Shift.findByIdAndUpdate(shiftNeedToBeUpdated._id, shiftNeedToBeUpdated, function(err, updatedShift) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
-			res.json(updatedShift);
+			res.status(200).json(updatedShift);
 		})
 	}
 }

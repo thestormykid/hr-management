@@ -12,6 +12,8 @@ module.exports = {
 		Attendance.distinct('factor.componentName', function(err, distinctHeaders) {
 			if (err) {
 				console.log(err);
+				return	res.status(500).json(err);
+
 			}
 
 			res.json(distinctHeaders);
@@ -25,7 +27,8 @@ module.exports = {
 		Attendance.findOne({startingDate: markedAttendance.startingDate, employeeDetails: ObjectId(user._id)}, function(err, checkAttendance) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			if (!checkAttendance) {
@@ -33,7 +36,8 @@ module.exports = {
 				Attendance.create(markedAttendance, function(err, attendanceMarked) {
 					if (err) {
 						console.log(err);
-						throw err;
+						return	res.status(500).json(err);
+
 					}
 
 					res.json('attendance marked');
@@ -51,7 +55,8 @@ module.exports = {
 		Attendance.deleteOne({_id: id}, function(err, attendanceDeleted) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			res.json('successfully Deleted');
@@ -123,7 +128,8 @@ module.exports = {
 		Attendance.aggregate(query, function(err, selectedEmployeesList) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			res.json(selectedEmployeesList);
@@ -277,7 +283,8 @@ module.exports = {
 			Employee.find(query2, {_id: 1}, function(err, employee_ids) {
 				if (err) {
 					console.log(err);
-					throw err;
+					return	res.status(500).json(err);
+
 				}
 
 				var eId = [];
@@ -312,7 +319,8 @@ module.exports = {
 		async.parallel(queryList, function(err, allUpdatedAttendance) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			res.json({message: 'approved successfully'});
@@ -325,16 +333,16 @@ function getUserAttendanceHelper(req, res, user, query) {
 	Employee.findOne({_id: ObjectId(user._id)}).populate('designationId').populate('shiftId').exec(function(err, employee) {
 		if (err) {
 			console.log(err);
-			throw err;
+			return	res.status(500).json(err);
+
 		}
 
 		Attendance.aggregate(query, function(err, attendanceList) {
 			if (err) {
 				console.log(err);
-				throw err;
-			}
+				return	res.status(500).json(err);
 
-			console.log(attendanceList);
+			}
 
 			return res.json({ 'attendanceList': attendanceList, 'user': employee});
 		})

@@ -9,7 +9,8 @@ module.exports = {
 
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			res.json(allComponents);
@@ -22,7 +23,8 @@ module.exports = {
 		Designation.create(designation, function(err, createdDesignation) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			res.json('desingation created');
@@ -36,7 +38,8 @@ module.exports = {
 		Designation.findByIdAndUpdate(designation._id, designation, function(err, updated) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			res.json('updated successfully');
@@ -49,7 +52,8 @@ module.exports = {
 		Employee.find({designationId: id}, function(err, checkEmployee) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			if (checkEmployee.length != 0) {
@@ -59,7 +63,8 @@ module.exports = {
 				Designation.deleteOne({_id: id}, function(err, status) {
 					if (err) {
 						console.log(err);
-						throw err;
+						return	res.status(500).json(err);
+
 					}
 
 					res.json('designation deleted');

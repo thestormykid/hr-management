@@ -17,7 +17,7 @@ var routes = {
 }
 
 
-// router.get('/test', routes.views.factor.index);
+router.get('/test', routes.views.factor.index);
 
 // user components
 router.post('/signup', routes.views.user.signUp);

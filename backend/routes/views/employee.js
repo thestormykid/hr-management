@@ -37,8 +37,9 @@ adminToken = email => {
 module.exports = {
 
 	addEmployee: function(req, res) {
+		var employee = {};
 		var employee = req.body.employee;
-		console.log(employee);
+
 		if (employee.email) {
 			var query = { $or: [{code: employee.code}, {email: employee.email}]};
 
@@ -50,28 +51,42 @@ module.exports = {
 		Employee.findOne(query, function(err, checkEmployeeCode) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return res.status(500).json(err);
+
 			}
 
-			console.log(checkEmployeeCode);
-
 			if (checkEmployeeCode) {
-				return res.json({message: 'exists'});
+
+				if (checkEmployeeCode.isAdmin=='true') {
+					return res.status(200).json({message: 'email or employee code does not exist'})
+
+				} else {
+					return res.status(200).json({message: 'employee code exists'});
+
+				}
 
 			} else {
-
 		    	var newEmployee = new Employee(employee);
 
 		    	newEmployee.save(function(err, employeeCreated) {
+
 		    		if (err) {
 		    			console.log(err);
-		    			res.json('asdasdasd');
-		    			throw err;
+
+		    			if (err.isPresent) {
+		    				return res.status(409).json(err.message);
+		    			}
+
+		    			if (err.message) {
+		    				return res.status(415).json(err.message)
+		    			}
+
+		    			return res.status(500).json(err);
 		    		}
 
 		    		var token = signToken(employeeCreated);
 
-		    		return res.json({token: token, user: employeeCreated});
+		    		return res.status(200).json({token: token, user: employeeCreated});
 		    	})
 			}
 		})
@@ -91,7 +106,8 @@ module.exports = {
 		Employee.find({isAdmin: false}).populate('designationId').populate('shiftId').skip(pno*itemsPerPage).limit(itemsPerPage).exec(function(err, allEmployee) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
+
 			}
 
 			res.json(allEmployee);
@@ -103,7 +119,7 @@ module.exports = {
 		Employee.count({isAdmin: false}).exec(function(err, employeeCount) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
 			}
 
 			res.json({totalItems: employeeCount});
@@ -116,7 +132,7 @@ module.exports = {
 		Employee.findByIdAndUpdate(employee._id, employee, function(err, updatedEmployee) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
 			}
 
 			res.json(updatedEmployee);
@@ -130,7 +146,7 @@ module.exports = {
 		Employee.deleteOne({_id: id}, function(err, deletedEmployee) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
 			}
 
 			res.json(deletedEmployee);
@@ -145,7 +161,7 @@ module.exports = {
 		sendEmail(mail, token, function(err, token, emailSendStatus) {
 			if (err) {
 			 	console.log(err);
-			 	throw err;
+				return	res.status(500).json(err);
 			}
 
 			res.json({status: emailSendStatus, token: token});
@@ -162,7 +178,7 @@ module.exports = {
 		Employee.findOne({email: payload.sub}, function(err, checkEmployeeExistance) {
 			if (err) {
 				console.log(err);
-				throw err;
+				return	res.status(500).json(err);
 			}
 
 			if (checkEmployeeExistance) {
