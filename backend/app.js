@@ -1,15 +1,21 @@
-var express = require('express');
+var express 		    = 	require('express');
+var path 			      =	  require('path');
+var cookieParser 	  = 	require('cookie-parser');
+var logger 			    = 	require('morgan');
+var cors 			      = 	require('cors');
+var app 			      = 	express();
+var mongoose 		    = 	require('mongoose');
+var http 			      =	  require('http').Server(app);
+var io				      =	  require('socket.io')(http);
+
+require('./socket')(io);
 require('./passport');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var cors = require('cors');
-var mongoose = require('mongoose');
 require('dotenv').config();
+
+
 
 var routes = require('./routes/route');
 
-var app = express();
 
 mongoose.connect('mongodb://localhost/management');
 
@@ -22,4 +28,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 
-module.exports = app;
+var allSockets = [];
+
+http.listen(3000, function() {
+  console.log("listening");
+});
+
+module.exports = {
+	app:	app,
+	io: io
+}

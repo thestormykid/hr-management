@@ -2,6 +2,8 @@
     <head>
         <title>hr management</title>
         <!--cdn and node modules-->
+        <script src="http://127.0.0.1:3000/socket.io/socket.io.js"></script>
+
         <script src="./node_modules/angular/angular.min.js"></script>
         <script src="./node_modules/ui-bootstrap4/dist/ui-bootstrap-tpls.js"></script>
         <script src="./node_modules/angular-animate/angular-animate.min.js"></script>
@@ -13,7 +15,6 @@
 
         <script src="./app/config.js"></script>
         <script src="./app/app.js"></script>
-
         <!--controllers-->
         <script src="./app/controller/login.js"></script>
         <script src="./app/controller/attendance.js"></script>
@@ -41,7 +42,7 @@
         <script src="app/services/createShiftService.js"></script>
         <script src="app/services/employeeService.js"></script>
         <script src="app/services/attendanceService.js"></script>
-
+        <script src="app/services/socketService.js"></script>
         <!--<script src="../node_modules/angular/angular.js"></script>-->
         <link rel="stylesheet" href="app/stylesheet/main.css">
     </head>
@@ -79,6 +80,11 @@
                     <!--</li>-->
                     <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="reports">Reports</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        notification
                     </li>
                     <li ng-if="containsUser" class="nav-item" style="cursor: pointer">
                         <a class="nav-link" ng-click="logout()">logout</a>

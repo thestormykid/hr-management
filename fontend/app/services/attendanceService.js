@@ -7,23 +7,25 @@ management.factory('attendanceService', ['$http', '$q', function($http, $q) {
 
     return {
 
-        markAttendance: function(attendanceDetails) {
+        markAttendance: function(attendanceDetails, socket) {
             var promise = $q.defer();
 
-            $http({
-                url: `${BACKEND}/markAttendance`,
-                method: 'POST',
-                headers: setHeaders(),
-                data: {
-                    attendanceDetails: attendanceDetails
+            var data = {
+                attendanceDetails: attendanceDetails,
+                token: setHeaders()
+            }
+
+            socket.emit('mark-attendance', data);
+
+            socket.on('get-ack', function(data) {
+                console.log(data);
+                if (data.status == 200) {
+                    promise.resolve(data.message);
+
+                } else if (data.status == 500) {
+                    promise.reject(data.message);
+
                 }
-
-            }).then(function(success) {
-                promise.resolve(success.data);
-
-            }, function(failure) {
-                promise.reject(failure.data);
-
             })
 
             return promise.promise;

@@ -1,5 +1,5 @@
-management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationService', 'createShiftService', 'attendanceService', '$location', '$state',
-    function($scope, employeeService, designationService, createShiftService, attendanceService, $location, $state) {
+management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationService', 'createShiftService', 'attendanceService', '$location', '$state', 'socketService',
+    function($scope, employeeService, designationService, createShiftService, attendanceService, $location, $state, socketService) {
 
         $scope.allEmployees = [];
         $scope.allShifts = [];
@@ -18,6 +18,14 @@ management.controller('reportsCtrl', ['$scope', 'employeeService', 'designationS
             startingDate: new Date(dt.setDate(dt.getDate()-7)),
             endingDate: new Date(Date.now())
         };
+
+        $scope.socket = socketService.getAdminSocket();
+
+        $scope.socket.on('send-status', function(data) {
+            alert('alskdjalskdjaskdj');
+            hulla.send(data.message, 'info');
+
+        })
 
         $scope.sortBy = function(propertyName) {
             $scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;

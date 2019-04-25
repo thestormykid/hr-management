@@ -1,8 +1,9 @@
-var Attendance = require('../../model/attendance');
-var Employee = require('../../model/employee');
-var ObjectId = require('mongodb').ObjectID;
-var async  = require('async');
-var util = require('util');
+var Attendance 			= require('../../model/attendance');
+var Employee 			= require('../../model/employee');
+var ObjectId 			= require('mongodb').ObjectID;
+var async  				= require('async');
+var util 				= require('util');
+var jwtDecode 			= require('jwt-decode');
 
 
 module.exports = {
@@ -20,14 +21,18 @@ module.exports = {
 		})
 	},
 
-	markAttendance: function(req, res) {
-		var markedAttendance = req.body.attendanceDetails;
-		var user = req.user;
+	markAttendance: function(socket, adminSocket, data) {
+		var markedAttendance = data.attendanceDetails;
+		var user = jwtDecode(data.token.authorization).sub;
+ 		var userStatusData = {};
+ 		var adminStatusData = {}
 
-		Attendance.findOne({startingDate: markedAttendance.startingDate, employeeDetails: ObjectId(user._id)}, function(err, checkAttendance) {
+		Attendance.findOne({startingDate: Date.parse(markedAttendance.startingDate), employeeDetails: ObjectId(user)}, function(err, checkAttendance) {
 			if (err) {
-				console.log(err);
-				return	res.status(500).json(err);
+			 	console.log(err);
+			 	userStatusData.status = 500;
+			 	userStatusData.message = err;
+			 	return socket.emit('get-ack', userStatusData);
 
 			}
 
@@ -36,15 +41,26 @@ module.exports = {
 				Attendance.create(markedAttendance, function(err, attendanceMarked) {
 					if (err) {
 						console.log(err);
-						return	res.status(500).json(err);
+						userStatusData.status = 500;
+						userStatusData.message = err;
+						return socket.emit('get-ack', userStatusData);
 
 					}
 
-					res.json('attendance marked');
+					userStatusData.status = 200;
+					userStatusData.message = 'attendance marked';
+					adminStatusData.status = 200;
+					adminStatusData.message = 'attendance added refresh your page';
+					adminSocket.emit('send-status', adminStatusData);
+					return socket.emit('get-ack', userStatusData);
+
 				})
 
 			} else {
-				res.json('attendance present');
+				userStatusData.status = 200;
+				userStatusData.message = 'attendance present';
+				return socket.emit('get-ack', userStatusData);
+
 			}
 		})
 	},
@@ -177,7 +193,6 @@ module.exports = {
 				$limit: itemsPerPage
 			})
 
-			console.log(query);
 
 			// query.push(cond3);
 			return getUserAttendanceHelper(req, res, user, query)
@@ -239,7 +254,6 @@ module.exports = {
 
 
 		if (filter && filter.startingDate) {
-			console.log("*****************************************");
 			if (query) {
 				query.startingDate = {};
 				query.startingDate.$gte = new Date(filter.startingDate)
@@ -351,14 +365,12 @@ function getUserAttendanceHelper(req, res, user, query) {
 
 function attendanceCount(req, res, query) {
 
-	console.log(query);
-
 	Attendance.count(query).exec(function(err, totalCount) {
 			if (err) {
 				console.log(err);
 				throw err;
 			}
-			console.log(totalCount);
+
 
 			return res.json({totalItems: totalCount});
 	})

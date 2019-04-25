@@ -14,7 +14,6 @@ passport.use(
     async (payload, done) => {
       try {
 
-        console.log("payload 1st", payload);
         //find the user specied
         const user = await User.findById(payload.sub);
 

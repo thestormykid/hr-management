@@ -1,5 +1,5 @@
-management.controller('attendanceCtrl',['$scope', 'employeeService', 'designationService', 'createShiftService', '$uibModal', 'attendanceService', '$location', '$rootScope', function($scope, employeeService,
-     designationService, createShiftService, $uibModal, attendanceService, $location, $rootScope) {
+management.controller('attendanceCtrl',['$scope', 'employeeService', 'designationService', 'createShiftService', '$uibModal', 'attendanceService', '$location', '$rootScope', 'socketService', function($scope, employeeService,
+     designationService, createShiftService, $uibModal, attendanceService, $location, $rootScope, socketService) {
 
     $scope.userDetails = {};
     $scope.userId;
@@ -8,10 +8,29 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
     $scope.allDesignations = [];
     $scope.allShifts = [];
     var dt = new Date();
+
     $scope.filter = {
         startingDate: new Date(dt.setDate(dt.getDate()-7)),
         endingDate: new Date(Date.now())
     };
+
+    $scope.socket = socketService.getUserSocket();
+
+    // $scope.socket.emit('testing', function(data) {
+    //     console.log(data);
+    // });
+
+    // (function hanus() {
+    //     socketService.sendData('hanu is my name')
+    //         .then(function(success) {
+    //             console.log(success.data);
+    //
+    //         }, function(failure) {
+    //             console.log(failure.data);
+    //
+    //         })
+    // })();
+
 
     var hulla = new hullabaloo();
     $scope.propertyName = 'amount';
@@ -170,7 +189,7 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
 }])
 
 management.controller('attendanceMarkingCtrl', function ($uibModalInstance, designationService, createShiftService, employeeService,
-                                                         $scope, workingShiftService, data, attendanceService) {
+                                                         $scope, workingShiftService, data, attendanceService, socketService) {
     $scope.allFactors = [];
     $scope.employee = data;
     $scope.attendance = {};
@@ -178,6 +197,7 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
     $scope.format = 'dd-MMMM-yyyy';
     $scope.factor = [];
     var hulla = new hullabaloo();
+    $scope.socket = socketService.getUserSocket();
 
     $scope.open1 = function() {
         $scope.popup1.opened = true;
@@ -194,7 +214,7 @@ management.controller('attendanceMarkingCtrl', function ($uibModalInstance, desi
         addFactors();
 
 
-        attendanceService.markAttendance($scope.attendance)
+        attendanceService.markAttendance($scope.attendance, $scope.socket)
             .then(function(attendanceStatus) {
                 console.log(attendanceStatus);
                 if (attendanceStatus == 'attendance present') {
