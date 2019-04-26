@@ -1,0 +1,32 @@
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            <form name="myForm" class="form-group card component-form" novalidate>
+                <div class="row">
+                    <div class="col-sm-12" class="form-header">
+                        <h5>Send Notification</h5>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Add Content</label>
+                        <input name="message" type="message" required class="form-control" placeholder="enter the notification" ng-model="notif.message">
+                        <div ng-show="myForm.message.$dirty&&myForm.email.$touched">
+                            <span ng-show="myForm.email.$error.required" style="color: red">Enter Message</span>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary" ng-click="sendNotification()"ng-disabled="myForm.$invalid">
+                            submit
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

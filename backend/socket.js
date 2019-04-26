@@ -6,9 +6,9 @@ function onUserConnect(socket, adminSocket) {
 
 }
 
-// function onAdminConnect(socket) {
-// 	emitters.
-// }
+function onAdminConnect(socket, userSocket) {
+	listeners.sendNotification(socket, userSocket);
+}
 
 module.exports = function(io) {
 
@@ -19,7 +19,7 @@ module.exports = function(io) {
 		// console.log(socket)
 		console.log('user socket connected');
 
-		socket.on('diconnected', function() {
+		socket.on('disconnect', function() {
 			console.log('user socket disconnected');
 		})
 
@@ -30,10 +30,10 @@ module.exports = function(io) {
 
 		console.log('admin socket connected')
 
-		socket.on('diconnect', function() {
+		socket.on('disconnect', function() {
 			console.log('admin socket disconnected');
 		})
 
-		// onAdminConnect(socket);
+		onAdminConnect(socket, userSocket);
 	})
 }

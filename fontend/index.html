@@ -29,6 +29,7 @@
         <script src="./app/controller/createAdmin.js"></script>
         <script src="./app/controller/rootPage.js"></script>
         <script src="./app/controller/updatePassword.js"></script>
+        <script src="app/controller/forum.js"></script>
         <!--<script src="./app/controlller/user-report.js"></script>-->
 
 
@@ -42,6 +43,7 @@
         <script src="app/services/createShiftService.js"></script>
         <script src="app/services/employeeService.js"></script>
         <script src="app/services/attendanceService.js"></script>
+        <script src="app/services/forumService.js"></script>
         <script src="app/services/socketService.js"></script>
         <!--<script src="../node_modules/angular/angular.js"></script>-->
         <link rel="stylesheet" href="app/stylesheet/main.css">
@@ -75,16 +77,25 @@
                     <li ng-if="containsUser&&!isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="attendance">Attendance</a>
                     </li>
-                    <!--<li ng-if="containsUser&&isAdmin" class="nav-item">-->
-                        <!--<a class="nav-link" ui-sref="user-reports">Reports</a>-->
-                    <!--</li>-->
                     <li ng-if="containsUser&&isAdmin" class="nav-item">
                         <a class="nav-link" ui-sref="reports">Reports</a>
                     </li>
                 </ul>
-                <ul>
-                    <li>
-                        notification
+                <ul class="navbar-nav ml-auto">
+                    <li ng-if="containsUser&&!isAdmin" uib-dropdown on-toggle="toggled(open)" class="mb-2">
+                        <a class="nav-link" style="cursor: pointer" ng-click="checkNotification()" id="simple-dropdown" uib-dropdown-toggle >
+                            <i class="far fa-bell fa-md"></i></a>
+                        <div class="dropdown-menu" style="right: 0px;left:auto" uib-dropdown-menu aria-labelledby="simple-dropdown">
+                            <div class="beeperNub"></div>
+                            <a href ng-repeat="notif in notificationItems" class="dropdown-item">
+                                <span ng-click="open(notif)">
+                                    {{notif.message}}
+                                </span>
+                            </a>
+                        </div>
+                    </li>
+                    <li ng-if="containsUser&&isAdmin" class="nav-item">
+                        <a class="nav-link" ui-sref="forum">Forum</a>
                     </li>
                     <li ng-if="containsUser" class="nav-item" style="cursor: pointer">
                         <a class="nav-link" ng-click="logout()">logout</a>
@@ -94,4 +105,18 @@
         </nav>
         <ui-view></ui-view>
     </body>
+
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-body" id="modal-body">
+            <form name="myForm" novalidate class="from-group component-form">
+                {{notif.message}}
+            </form>
+
+            <img ng-if="notif.opened.length > 0" src="{{url}}">
+            <!--<div class="modal-footer">-->
+            <!--<button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>-->
+            <!--<button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>-->
+            <!--</div>-->
+        </div>
+    </script>
 </html>

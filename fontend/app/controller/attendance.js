@@ -7,14 +7,13 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
     $scope.allEmployees = [];
     $scope.allDesignations = [];
     $scope.allShifts = [];
+    $scope.socket;
     var dt = new Date();
 
     $scope.filter = {
         startingDate: new Date(dt.setDate(dt.getDate()-7)),
         endingDate: new Date(Date.now())
     };
-
-    $scope.socket = socketService.getUserSocket();
 
     // $scope.socket.emit('testing', function(data) {
     //     console.log(data);
@@ -30,6 +29,7 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
     //
     //         })
     // })();
+
 
 
     var hulla = new hullabaloo();
@@ -181,10 +181,23 @@ management.controller('attendanceCtrl',['$scope', 'employeeService', 'designatio
         } else {
             getAttendance();
             getCount();
+            $scope.socket = socketService.getUserSocket();
         }
     }
 
     getData();
+
+    $scope.socket.on('notification-added', function(data) {
+        if (data.status == 200) {
+            hulla.send(data.message, 'success');
+
+        } else if (data.status == 500){
+            hulla.send(data.message, 'info');
+
+        }
+    })
+
+
 
 }])
 

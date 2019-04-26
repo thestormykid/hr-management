@@ -12,7 +12,8 @@ var routes = {
         salaryComponent: require('./views/salaryComponent'),
         shift: require('./views/shifts'),
         factor: require('./views/factor'),
-        user: require('./views/user')
+        user: require('./views/user'),
+        notification: require('./views/notification')
     }
 }
 
@@ -73,6 +74,10 @@ router.get('/get-headers', passportJWT, routes.views.attendance.getHeaders);
 // router.get('/apply-filter', passportJWT, routes.views.attendance.applyFilter);
 router.get('/getAttendanceCount', passportJWT, routes.views.attendance.getAttendanceCount);
 
+
+// notification
+router.get('/get-all-notification', passportJWT, routes.views.notification.getAllNotification);
+router.get('/pixelCode', routes.views.notification.pixelCode);
 
 // router.get('/testing', routes.views.attendance.testing);
 // router.get('/checkAttendance', routes.views.attendance.checkAttendance);

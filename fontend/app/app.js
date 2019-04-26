@@ -1,6 +1,6 @@
 window.management = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'ui.router']);
 
-management.controller('mainCtrl', ['$scope', '$rootScope', '$location', function($scope, $rootScope, $location) {
+management.controller('mainCtrl', ['$scope', '$rootScope', '$location', 'forumService', '$uibModal', function($scope, $rootScope, $location, forumService, $uibModal) {
 
     $rootScope.isAdmin = localStorage.getItem('isAdmin');
     $rootScope.containsUser = localStorage.getItem('token');
@@ -11,6 +11,19 @@ management.controller('mainCtrl', ['$scope', '$rootScope', '$location', function
         $rootScope.isAdmin = JSON.parse($scope.isAdmin);
 
     }
+
+    $scope.notificationItems = [];
+
+    $scope.status = {
+        isopen: false
+    };
+
+    $scope.toggleDropdown = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.status.isopen = !$scope.status.isopen;
+    };
+
 
     $scope.logout = function() {
         localStorage.setItem('isAdmin', false);
@@ -33,6 +46,55 @@ management.controller('mainCtrl', ['$scope', '$rootScope', '$location', function
             $location.path('/attendance');
         }
     }
+
+
+    $scope.checkNotification = function() {
+
+        forumService.getAllNotification()
+            .then(function(success) {
+                $scope.notificationItems = success.data;
+                console.log(success.data);
+
+            }, function(error) {
+                console.log(error.data);
+
+            })
+    }
+
+    $scope.open = function (notif) {
+
+        var modalInstance = $uibModal.open({
+            animation: true,
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'myModalContent.html',
+            controller: 'NotifCtrl',
+            controllerAs: '$scope',
+            windowClass: 'show',
+            resolve: {
+                data: function () {
+                    return notif;
+                }
+            }
+        });
+
+        modalInstance.result.then(function(status) {
+            if (status=='update') {
+                hulla.send('details updated', 'success');
+
+            } else {
+                hulla.send('employees added successfully', 'success');
+                getEmployeeCount();
+
+            }
+
+            $scope.allEmployees = getData();
+        }, function() {
+
+        });
+    };
+
+
 
 }])
 
@@ -141,6 +203,14 @@ management.config(['$stateProvider', function($stateProvider) {
                 redirectIfNotAuthenticated: _redirectIfNotAuthenticated
             }
         })
+        .state('forum', {
+            url: '/forum',
+            templateUrl: './app/templates/forum.html',
+            controller: 'forumCtrl',
+            resolve: {
+                redirectIfNotAuthenticated: _redirectIfNotAuthenticated
+            }
+        })
         .state('success', {
             url: '/success',
             templateUrl: './app/templates/success.html'
@@ -236,3 +306,12 @@ function checkForPassword($q, $http, $state, $timeout) {
 
     return defer.promise;
 }
+
+
+
+management.controller('NotifCtrl', function ($uibModalInstance, $scope, data) {
+
+    $scope.notif = data;
+    console.log($scope.notif);
+    $scope.url= `http://localhost:3000/pixelCode?token=${localStorage.getItem('token')}&id=${$scope.notif._id}`;
+});

@@ -242,6 +242,19 @@ nav {
 .sortorder:after {
     content: '\25b2';
 }
+
 .sortorder.reverse:after {
     content: '\25bc';
+}
+
+.beeperNub {
+    background: white;
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: 0 -1195px;
+    height: 11px;
+    position: absolute;
+    top: -11px;
+    width: 20px;
+    right: 0.5em;
 }
